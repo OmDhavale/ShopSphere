@@ -1,0 +1,140 @@
+// app/page.jsx
+"use client";
+
+import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react'; // Added useRef and useEffect
+
+export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const sidebarRef = useRef(null); // Create a ref for the sidebar
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setIsMenuOpen(false); // Close the sidebar
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside); // Use mousedown for better user experience
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 relative">
+      <header className="py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <a href="/" className="text-2xl font-semibold text-gray-800">
+            ShopSphere
+          </a>
+
+          <div className="md:hidden">
+            <button onClick={toggleMenu} className="text-gray-600 hover:text-gray-900 focus:outline-none">
+              <svg
+                className="h-6 w-6 fill-current"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {isMenuOpen ? (
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.829-4.828 4.829a1 1 0 0 1-1.414-1.414l4.829-4.828-4.829-4.828a1 1 0 1 1 1.414-1.414l4.828 4.829 4.829-4.829a1 1 0 1 1 1.414 1.414l-4.828 4.828 4.828 4.828z"
+                  />
+                ) : (
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
+
+          <nav className={`md:flex space-x-4 ${isMenuOpen ? 'hidden' : 'hidden md:flex'}`}>
+            <a href="/products" className="text-gray-600 hover:text-gray-900">Products</a>
+            <a href="/categories" className="text-gray-600 hover:text-gray-900">Categories</a>
+            <a href="/cart" className="text-gray-600 hover:text-gray-900">Cart</a>
+            <a href="/account" className="text-gray-600 hover:text-gray-900">Account</a>
+          </nav>
+        </div>
+      </header>
+
+      <div
+        ref={sidebarRef} // Add the ref to the sidebar div
+        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        } md:hidden`}
+      >
+        <div className="p-4">
+          <nav className="flex flex-col space-y-4">
+            <a href="/products" className="text-gray-600 hover:text-gray-900">Products</a>
+            <a href="/categories" className="text-gray-600 hover:text-gray-900">Categories</a>
+            <a href="/cart" className="text-gray-600 hover:text-gray-900">Cart</a>
+            <a href="/account" className="text-gray-600 hover:text-gray-900">Account</a>
+          </nav>
+        </div>
+      </div>
+
+      <main className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto text-center">
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-6">
+            Discover Your Next Favorite Thing.
+          </h1>
+          <p className="text-lg text-gray-600 mb-8">
+            Explore our curated collection of high-quality products, handpicked for style and functionality.
+          </p>
+          <a
+            href="/products"
+            className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-6 rounded-full hover:shadow-lg transition-all duration-300"
+          >
+            Shop Now
+          </a>
+        </div>
+
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <Image
+              src="/product1.jpg"
+              alt="Product 1"
+              width={500}
+              height={300}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">Modern Desk Lamp</h2>
+              <p className="text-gray-600">Sleek and stylish design for your workspace.</p>
+            </div>
+          </div>
+
+          {/* ... (rest of the main content) ... */}
+
+        </div>
+
+        <div className="mt-20 text-center">
+          <h2 className="text-3xl font-semibold text-gray-900 mb-4">Featured Categories</h2>
+          <div className="flex justify-center space-x-8">
+            <a href="/categories/electronics" className="text-gray-600 hover:text-gray-900">Electronics</a>
+            <a href="/categories/clothing" className="text-gray-600 hover:text-gray-900">Clothing</a>
+            <a href="/categories/home-goods" className="text-gray-600 hover:text-gray-900">Home Goods</a>
+          </div>
+        </div>
+      </main>
+
+      <footer className="py-8 px-4 sm:px-6 lg:px-8 bg-gray-100">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-gray-600">&copy; {new Date().getFullYear()} ShopSphere. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
