@@ -3,11 +3,25 @@
 
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react'; // Added useRef and useEffect
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const sidebarRef = useRef(null); // Create a ref for the sidebar
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false); // State for login prompt
+  const router = useRouter();
+  const handleShopNowClick = () => {
+    setShowLoginPrompt(true); // Show the login prompt
+  };
 
+  const handleLoginRedirect = () => {
+    setShowLoginPrompt(false); // Close the prompt
+    router.push('/account'); // Redirect to the account page
+  };
+
+  const handleClosePrompt = () => {
+    setShowLoginPrompt(false);
+  }
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -94,7 +108,7 @@ export default function Home() {
             Explore our curated collection of high-quality products, handpicked for style and functionality.
           </p>
           <a
-            href="/products"
+            onClick={handleShopNowClick}
             className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-6 rounded-full hover:shadow-lg transition-all duration-300"
           >
             Shop Now
@@ -135,6 +149,30 @@ export default function Home() {
           <p className="text-gray-600">&copy; {new Date().getFullYear()} ShopSphere. All rights reserved.</p>
         </div>
       </footer>
+
+         {/* Login Prompt */}
+      {showLoginPrompt && (
+        <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500 to-pink-500 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"> {/* Added w-full max-w-md */}
+            <h2 className="text-2xl font-semibold  text-gray-900 mb-6 text-center">Login Required</h2> {/* Added text-center */}
+            <p className="mb-8  text-gray-900  text-center">Please log in to your account to continue.</p> {/* Added text-center */}
+            <div className="flex flex-col items-center justify-center space-y-4"> {/* Changed flex layout */}
+              <button
+                onClick={handleLoginRedirect}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" //w-full added.
+              >
+                Login
+              </button>
+              <button
+                onClick={handleClosePrompt}
+                className="w-full bg-gray-300 text-gray-700 py-2 px-4 rounded" //w-full added.
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
