@@ -3,13 +3,14 @@
 
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
-
+  const router = useRouter(); // Initialize useRouter
   // Static product data (replace with database fetch later)
   const products = [
     { id: 1, name: 'Modern Desk Lamp', category: 'lighting', price: 49.99, imageUrl: '/product1.jpg' },
@@ -20,7 +21,7 @@ export default function ProductsPage() {
     { id: 6, name: 'Smart Watch', category: 'electronics', price: 199.99, imageUrl: '/product3.jpg' },
     // Add more products as needed
   ];
-
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const filteredProducts = products.filter((product) => {
     const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const filterMatch = filter === 'all' || product.category === filter;
@@ -53,6 +54,24 @@ export default function ProductsPage() {
     email: 'john.doe@example.com',
   };
 
+  const handleAddToCart = (productId) => {
+    // Implement your add to cart logic here
+    console.log(`Product ${productId} added to cart`);
+    // You might want to use a state management solution or context API
+    // to manage the cart state.
+  };
+  const handleBuyNow = (productId) => {
+    // Implement your buy now logic here
+    router.push(`/product/${productId}`);
+  };
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+  }
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
       <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500">
@@ -65,20 +84,31 @@ export default function ProductsPage() {
               placeholder="Search items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border rounded py-2 px-3 focus:outline-none text-white"
+              className="rounded-xl py-2 px-3 focus:outline-none text-white "style={{backgroundColor:'rgba(0, 0, 0, 0.23)'}}
             />
 
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="border rounded py-2 px-3 focus:outline-none text-black"
+              className=" rounded-xl py-2 px-3 focus:outline-none text-white appearance-none" // Added appearance-none
+              style={{
+                backgroundColor:'rgba(0, 0, 0, 0.23)'
+              }}
+              
             >
-              <option value="all">All</option>
-              <option value="lighting">Lighting</option>
-              <option value="electronics">Electronics</option>
-              <option value="accessories">Accessories</option>
-              <option value="appliances">Appliances</option>
-              <option value="furniture">Furniture</option>
+               {/* <div 
+                className="text-black rounded-md overflow-hidden" // Container with gradient and white text
+                style={{ 
+                  background: 'linear-gradient(to right, #8B5CF6, #EC4899)', // Gradient background
+                }} 
+              >*/}
+                <option value="all" className="p-2 block hover:bg-purple-700/50">All</option>
+                <option value="lighting" className="p-2 block hover:bg-purple-700/50">Lighting</option>
+                <option value="electronics" className="p-2 block hover:bg-purple-700/50">Electronics</option>
+                <option value="accessories" className="p-2 block hover:bg-purple-700/50">Accessories</option>
+                <option value="appliances" className="p-2 block hover:bg-purple-700/50">Appliances</option>
+                <option value="furniture" className="p-2 block hover:bg-purple-700/50">Furniture</option>
+              {/* </div> */}
             </select>
 
             <div className="relative">
@@ -114,17 +144,91 @@ export default function ProductsPage() {
       <main className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden" onClick={() => handleProductClick(product)}>
               <Image src={product.imageUrl} alt={product.name} width={500} height={300} className="w-full h-48 object-cover" />
               <div className="p-6">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.name}</h2>
                 <p className="text-gray-600">Category: {product.category}</p>
                 <p className="text-gray-600 font-semibold">${product.price.toFixed(2)}</p>
               </div>
+              <div className="p-4">
+                <div className='flex'>
+
+                <button
+                  onClick={() => handleAddToCart(product.id)}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                >
+                  Add to Cart
+                </button>
+                <button
+                  onClick={() => handleBuyNow(product.id)}
+                  className="w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                >
+                  Buy Now
+                </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </main>
+
+{/* Modal Overlay */}
+{selectedProduct && (
+        <div className="fixed top-0 left-0 w-full h-full bg-opacity-25 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <h2 className="text-2xl text-gray-600 font-semibold mb-4">{selectedProduct.name}</h2>
+            <Image
+              src={selectedProduct.imageUrl}
+              alt={selectedProduct.name}
+              width={500}
+              height={300}
+              className="w-full h-48 object-cover mb-4 rounded-md"
+            />
+            <p className="text-gray-600 mb-2">Category: {selectedProduct.category}</p>
+            <p className="text-gray-600 font-semibold mb-4">
+              ${selectedProduct.price.toFixed(2)}
+            </p>
+            <p className="text-gray-700 mb-4">
+              {/* Replace with your product description */}
+              This is a sample product description. You can add more details here.
+            </p>
+            <div className="flex flex-col sm:flex-row sm:space-x-2">
+              <button
+                onClick={() => handleAddToCart(selectedProduct.id)}
+                className="w-full sm:w-1/2 mb-2 sm:mb-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+              >
+                Add to Cart
+              </button>
+              <button
+                onClick={() => handleBuyNow(selectedProduct.id)}
+                className="w-full sm:w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+              >
+                Buy Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       <footer className="py-8 px-4 sm:px-6 lg:px-8 bg-gray-100">
         <div className="max-w-6xl mx-auto text-center">

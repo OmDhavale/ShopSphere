@@ -129,7 +129,32 @@ export default function Home() {
               <p className="text-gray-600">Sleek and stylish design for your workspace.</p>
             </div>
           </div>
-
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <Image
+                src="/product1.jpg"
+                alt="Product 1"
+                width={500}
+                height={300}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">Comfortable Wireless Headphones</h2>
+                <p className="text-gray-600">electronics</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <Image
+                src="/product1.jpg"
+                alt="Product 1"
+                width={500}
+                height={300}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">Minimalist Backpack</h2>
+                <p className="text-gray-600">accessories</p>
+              </div>
+              </div>
           {/* ... (rest of the main content) ... */}
 
         </div>
