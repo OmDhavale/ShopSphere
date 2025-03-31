@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+import mongoose,{ Schema } from "mongoose";
 //User fields: name, userID, password, usertype(customer or admin),email
 const userSchema = new mongoose.Schema({
     username : {
         type: String,
-        required : true
+        // required : true
     },
     
     email: {
@@ -21,5 +21,5 @@ const userSchema = new mongoose.Schema({
 
 },{timestamps : true, versionKey : false})
 
-module.exports = mongoose.model("User",userSchema); //user collection of userSchema type
-
+const userModel = mongoose.models.User || mongoose.model("User",userSchema); //user collection of userSchema type
+export default userModel;
