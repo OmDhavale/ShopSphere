@@ -13,29 +13,40 @@ export default function AccountPage() {
     e.preventDefault();
     if (isLogin) {
       // Handle login logic here
+      const reqBody = { email,password }
       axios
-        .post("/api/login", { email, password })
+        .post("/api/login",reqBody,{
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
         .then((response) => {
           console.log("Login successful:", response.data);
           toast.success("Login successful!");
         })
         .catch((error) => {
           console.error("Login error:", error);
-          toast.error("Invalid email or password");
+          toast.error(error.data.message || "Login failed");
         });
 
       console.log("Login:", { email, password });
     } else {
       // Handle signup logic here
+      
+      const reqBody = { email,password }
       axios
-        .post("/api/signup", { email, password })
+        .post("/api/signup", reqBody,{
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
         .then((response) => {
           console.log("Signup successful:", response.data);
           toast.success("Signup successful!");
         })
         .catch((error) => {
           console.error("Signup error:", error);
-          toast.error("Invalid email or password");
+          toast.error(error.data.message || "Signup failed");
         });
       console.log("Signup:", { email, password });
     }

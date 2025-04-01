@@ -4,16 +4,26 @@ import { dbConnect } from "../../../dbConfig/dbConnect.js";
 /**
  * SIGN IN or LOGINFUNCTION
  */
-exports.login = async (req, res) => {
+export async function POST(req){
   await dbConnect(); //connect to the database
-  request_body = req.body;
-  //Check if user id is present in the db or not
+  const request_body = await req.json();
+  //Check if email is present in the db or not
   const user = await userModel.findOne({ email: request_body.email });
   if (user == null) {
     console.log("User Email passed not found");
-    return res.status(400).send({
-      message: "User Email is not valid !",
-    });
+
+    return new Response(
+      JSON.stringify({
+        message: "User Email not found !",
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    // return res.status(400).send({  //Old one for express.js framework
+    //   message: "User Email is not valid !",
+    // });
   }
   //If user id is present check if password is matching or not
   const pass = bcrypt.compareSync(request_body.password, user.password);
@@ -22,9 +32,18 @@ exports.login = async (req, res) => {
   // then compares it with encrypted password in the db
   if (!pass) {
     console.log("Wrong password ");
-    return res.status(400).send({
-      message: "Wrong Password entered !",
-    });
+    return new Response(
+      JSON.stringify({
+        message: "Wrong Password entered !",
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    // return res.status(400).send({  //Old one for express.js framework
+    //   message: "Wrong Password entered !",
+    // });
   }
 
   //Using json web token(jwt) we will create the access token with given ttl(time to live) and return
@@ -48,4 +67,14 @@ exports.login = async (req, res) => {
   //   email: user.email,
   //   accessToken: token,
   // });
+  return new Response(
+    JSON.stringify({
+      message: "User logged in succesful !",
+      email: user.email,
+    }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 };
