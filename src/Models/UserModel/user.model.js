@@ -1,7 +1,10 @@
 import mongoose,{ Schema } from "mongoose";
 //User fields: name, userID, password, usertype(customer or admin),email
 const userSchema = new mongoose.Schema({
-
+    username:{
+        type: String,
+        
+    },
     email: {
         type : String,
         required : true,
