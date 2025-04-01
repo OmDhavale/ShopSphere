@@ -1,7 +1,10 @@
 import bcrypt from "bcryptjs";
 import userModel from "../../../Models/UserModel/user.model.js";
 import { dbConnect } from "../../../dbConfig/dbConnect.js";
+import cookie from "cookie";
+import jwt from "jsonwebtoken";
 /**
+ *
  * SIGN IN or LOGINFUNCTION
  */
 export async function POST(req){
@@ -67,14 +70,43 @@ export async function POST(req){
   //   email: user.email,
   //   accessToken: token,
   // });
+  //code for storing the value into local storage
+
+  // res.status(200).send({
+  //   message: "User logged in succesful !",
+  //   name: user.name,
+  //   email: user.email,
+  //   accessToken: token,
+  // });
+  // //code for storing the value into local storage
+  // localStorage.setItem("token", token);
+  // localStorage.setItem("email", user.email);
+  // localStorage.setItem("name", user.name);
+
+  // res.headers["Set-Cookie"] = cookie.serialize("email", user.email, {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   sameSite: "Strict",
+  //   path: "/",
+  // });
+
+  // res.headers["Set-Cookie"] = cookie.serialize("name", user.name, {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   sameSite: "Strict",
+  //   path: "/",
+  // });
+
   return new Response(
     JSON.stringify({
       message: "User logged in succesful !",
+      username: user.username,
       email: user.email,
     }),
     {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" ,
+      },
     }
   );
 };

@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 import { toast, ToastContainer } from "react-toastify";
 import axios from 'axios';
 export default function AccountPage() {
@@ -9,6 +10,7 @@ export default function AccountPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const router = useRouter();
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isLogin) {
@@ -23,8 +25,19 @@ export default function AccountPage() {
         .then((response) => {
           console.log("Login successful:", response.data);
           toast.success("Login successful!");
+          //code for setting up the name into local storage
+          const storedData = {
+            username: response.data.username,
+            email: response.data.email,
+          }
+          localStorage.setItem("localCredentials",JSON.stringify(storedData));
           setEmail("")
           setPassword("")
+          setTimeout(() => {
+            router.push("/products"); // Redirect to the home page after 2 seconds
+          }
+          , 2000);
+          
         })
         .catch((error) => {
           console.error("Login error:", error);

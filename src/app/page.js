@@ -11,7 +11,14 @@ export default function Home() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false); // State for login prompt
   const router = useRouter();
   const handleShopNowClick = () => {
-    setShowLoginPrompt(true); // Show the login prompt
+    //check if the localStorage has the credentials or not
+    const localCredentials = localStorage.getItem("localCredentials");
+    if (localCredentials == null) {
+      setShowLoginPrompt(true); // Show the login prompt
+    } else {
+       // Redirect to the products page
+       router.push("/products");
+    }
   };
 
   const handleLoginRedirect = () => {
@@ -51,7 +58,10 @@ export default function Home() {
           </a>
 
           <div className="md:hidden">
-            <button onClick={toggleMenu} className="text-gray-600 hover:text-gray-900 focus:outline-none">
+            <button
+              onClick={toggleMenu}
+              className="text-gray-600 hover:text-gray-900 focus:outline-none"
+            >
               <svg
                 className="h-6 w-6 fill-current"
                 viewBox="0 0 24 24"
@@ -74,27 +84,55 @@ export default function Home() {
             </button>
           </div>
 
-          <nav className={`md:flex space-x-4 ${isMenuOpen ? 'hidden' : 'hidden md:flex'}`}>
-            <a href="/products" className="text-gray-600 hover:text-gray-900">Products</a>
-            <a href="/categories" className="text-gray-600 hover:text-gray-900">Categories</a>
-            <a href="/cart" className="text-gray-600 hover:text-gray-900">Cart</a>
-            <a href="/account" className="text-gray-600 hover:text-gray-900">Account</a>
+          <nav
+            className={`md:flex space-x-4 ${
+              isMenuOpen ? "hidden" : "hidden md:flex"
+            }`}
+          >
+            <a
+              onClick={handleShopNowClick}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Products
+            </a>
+            <a href="/categories" className="text-gray-600 hover:text-gray-900">
+              Categories
+            </a>
+            <a href="/cart" className="text-gray-600 hover:text-gray-900">
+              Cart
+            </a>
+            <a href="/account" className="text-gray-600 hover:text-gray-900">
+              Account
+            </a>
           </nav>
         </div>
       </header>
 
+      {/* Sidebar for mobile view */}
+      {/* Added ref to the sidebar div */}
       <div
         ref={sidebarRef} // Add the ref to the sidebar div
         className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
         } md:hidden`}
       >
         <div className="p-4">
           <nav className="flex flex-col space-y-4">
-            <a href="/products" className="text-gray-600 hover:text-gray-900">Products</a>
-            <a href="/categories" className="text-gray-600 hover:text-gray-900">Categories</a>
-            <a href="/cart" className="text-gray-600 hover:text-gray-900">Cart</a>
-            <a href="/account" className="text-gray-600 hover:text-gray-900">Account</a>
+            <a
+              onClick={handleShopNowClick}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Products
+            </a>
+            <a href="/categories" className="text-gray-600 hover:text-gray-900">
+              Categories
+            </a>
+            <a href="/cart" className="text-gray-600 hover:text-gray-900">
+              Cart
+            </a>
+            <a href="/account" className="text-gray-600 hover:text-gray-900">
+              Account
+            </a>
           </nav>
         </div>
       </div>
@@ -105,7 +143,8 @@ export default function Home() {
             Discover Your Next Favorite Thing.
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Explore our curated collection of high-quality products, handpicked for style and functionality.
+            Explore our curated collection of high-quality products, handpicked
+            for style and functionality.
           </p>
           <a
             onClick={handleShopNowClick}
@@ -125,63 +164,99 @@ export default function Home() {
               className="w-full h-48 object-cover"
             />
             <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">Modern Desk Lamp</h2>
-              <p className="text-gray-600">Sleek and stylish design for your workspace.</p>
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                Modern Desk Lamp
+              </h2>
+              <p className="text-gray-600">
+                Sleek and stylish design for your workspace.
+              </p>
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <Image
-                src="/product1.jpg"
-                alt="Product 1"
-                width={500}
-                height={300}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">Comfortable Wireless Headphones</h2>
-                <p className="text-gray-600">electronics</p>
-              </div>
+              src="/product1.jpg"
+              alt="Product 1"
+              width={500}
+              height={300}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                Comfortable Wireless Headphones
+              </h2>
+              <p className="text-gray-600">electronics</p>
             </div>
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <Image
-                src="/product1.jpg"
-                alt="Product 1"
-                width={500}
-                height={300}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">Minimalist Backpack</h2>
-                <p className="text-gray-600">accessories</p>
-              </div>
-              </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <Image
+              src="/product1.jpg"
+              alt="Product 1"
+              width={500}
+              height={300}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                Minimalist Backpack
+              </h2>
+              <p className="text-gray-600">accessories</p>
+            </div>
+          </div>
           {/* ... (rest of the main content) ... */}
-
         </div>
 
         <div className="mt-20 text-center">
-          <h2 className="text-3xl font-semibold text-gray-900 mb-4">Featured Categories</h2>
+          <h2 className="text-3xl font-semibold text-gray-900 mb-4">
+            Featured Categories
+          </h2>
           <div className="flex justify-center space-x-8">
-            <a href="/categories/electronics" className="text-gray-600 hover:text-gray-900">Electronics</a>
-            <a href="/categories/clothing" className="text-gray-600 hover:text-gray-900">Clothing</a>
-            <a href="/categories/home-goods" className="text-gray-600 hover:text-gray-900">Home Goods</a>
+            <a
+              href="/categories/electronics"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Electronics
+            </a>
+            <a
+              href="/categories/clothing"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Clothing
+            </a>
+            <a
+              href="/categories/home-goods"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Home Goods
+            </a>
           </div>
         </div>
       </main>
 
       <footer className="py-8 px-4 sm:px-6 lg:px-8 bg-gray-100">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-gray-600">&copy; {new Date().getFullYear()} ShopSphere. All rights reserved.</p>
+          <p className="text-gray-600">
+            &copy; {new Date().getFullYear()} ShopSphere. All rights reserved.
+          </p>
         </div>
       </footer>
 
-         {/* Login Prompt */}
+      {/* Login Prompt */}
       {showLoginPrompt && (
         <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500 to-pink-500 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"> {/* Added w-full max-w-md */}
-            <h2 className="text-2xl font-semibold  text-gray-900 mb-6 text-center">Login Required</h2> {/* Added text-center */}
-            <p className="mb-8  text-gray-900  text-center">Please log in to your account to continue.</p> {/* Added text-center */}
-            <div className="flex flex-col items-center justify-center space-y-4"> {/* Changed flex layout */}
+          <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+            {" "}
+            {/* Added w-full max-w-md */}
+            <h2 className="text-2xl font-semibold  text-gray-900 mb-6 text-center">
+              Login Required
+            </h2>{" "}
+            {/* Added text-center */}
+            <p className="mb-8  text-gray-900  text-center">
+              Please log in to your account to continue.
+            </p>{" "}
+            {/* Added text-center */}
+            <div className="flex flex-col items-center justify-center space-y-4">
+              {" "}
+              {/* Changed flex layout */}
               <button
                 onClick={handleLoginRedirect}
                 className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" //w-full added.

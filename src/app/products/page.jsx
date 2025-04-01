@@ -47,11 +47,14 @@ export default function ProductsPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isUserMenuOpen]);
-
+  
+  const localCredentials = localStorage.getItem("localCredentials");
+  //convert localCredentials to JSON object
+  const parsedCredentials = JSON.parse(localCredentials);
   // Static user data (replace with actual user data later)
   const user = {
-    username: 'John Doe',
-    email: 'john.doe@example.com',
+    username: parsedCredentials.username,
+    email: parsedCredentials.email,
   };
 
   const handleAddToCart = (productId) => {
@@ -71,12 +74,18 @@ export default function ProductsPage() {
   const handleCloseModal = () => {
     setSelectedProduct(null);
   };
-
+  const handleLogout = () => {
+    // Clear local storage and redirect to login page
+    localStorage.removeItem("localCredentials");
+    router.push("/"); // Redirect to the account page after logout
+  } 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
       <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <a href="/"className="text-2xl font-semibold text-white">ShopSphere</a>
+          <a href="/" className="text-2xl font-semibold text-white">
+            Hello {parsedCredentials.username} !
+          </a>
 
           <div className="flex items-center space-x-4">
             <input
@@ -84,7 +93,8 @@ export default function ProductsPage() {
               placeholder="Search items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="rounded-xl py-2 px-3 focus:outline-none text-white "style={{backgroundColor:'rgba(0, 0, 0, 0.23)'}}
+              className="rounded-xl py-2 px-3 focus:outline-none text-white "
+              style={{ backgroundColor: "rgba(0, 0, 0, 0.23)" }}
             />
 
             <select
@@ -92,22 +102,48 @@ export default function ProductsPage() {
               onChange={(e) => setFilter(e.target.value)}
               className=" rounded-xl py-2 px-3 focus:outline-none text-white appearance-none" // Added appearance-none
               style={{
-                backgroundColor:'rgba(0, 0, 0, 0.23)'
+                backgroundColor: "rgba(0, 0, 0, 0.23)",
               }}
-              
             >
-               {/* <div 
+              {/* <div 
                 className="text-black rounded-md overflow-hidden" // Container with gradient and white text
                 style={{ 
                   background: 'linear-gradient(to right, #8B5CF6, #EC4899)', // Gradient background
                 }} 
               >*/}
-                <option value="all" className="p-2 block hover:bg-purple-700/50">All</option>
-                <option value="lighting" className="p-2 block hover:bg-purple-700/50">Lighting</option>
-                <option value="electronics" className="p-2 block hover:bg-purple-700/50">Electronics</option>
-                <option value="accessories" className="p-2 block hover:bg-purple-700/50">Accessories</option>
-                <option value="appliances" className="p-2 block hover:bg-purple-700/50">Appliances</option>
-                <option value="furniture" className="p-2 block hover:bg-purple-700/50">Furniture</option>
+              <option value="all" className="p-2 block hover:bg-purple-700/50">
+                All
+              </option>
+              <option
+                value="lighting"
+                className="p-2 block hover:bg-purple-700/50"
+              >
+                Lighting
+              </option>
+              <option
+                value="electronics"
+                className="p-2 block hover:bg-purple-700/50"
+              >
+                Electronics
+              </option>
+              <option
+                value="accessories"
+                className="p-2 block hover:bg-purple-700/50"
+              >
+                Accessories
+              </option>
+              <option
+                value="appliances"
+                className="p-2 block hover:bg-purple-700/50"
+              >
+                Appliances
+              </option>
+              <option
+                value="furniture"
+                className="p-2 block hover:bg-purple-700/50"
+              >
+                Furniture
+              </option>
               {/* </div> */}
             </select>
 
@@ -125,13 +161,17 @@ export default function ProductsPage() {
               <div
                 ref={userMenuRef}
                 className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden transition-transform duration-300 ease-in-out ${
-                  isUserMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
+                  isUserMenuOpen
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-4 opacity-0 pointer-events-none"
                 }`}
               >
                 <div className="py-2">
-                  <p className="block px-4 py-2 text-gray-800">{user.username}</p>
+                  <p className="block px-4 py-2 text-gray-800">
+                    {user.username}
+                  </p>
                   <p className="block px-4 py-2 text-gray-600">{user.email}</p>
-                  <button className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100">
+                  <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100">
                     Logout
                   </button>
                 </div>
@@ -144,28 +184,48 @@ export default function ProductsPage() {
       <main className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden" onClick={() => handleProductClick(product)}>
-              <Image src={product.imageUrl} alt={product.name} width={500} height={300} className="w-full h-48 object-cover" />
+            <div
+              key={product.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+              onClick={() => handleProductClick(product)}
+            >
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                width={500}
+                height={300}
+                className="w-full h-48 object-cover"
+              />
               <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.name}</h2>
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                  {product.name}
+                </h2>
                 <p className="text-gray-600">Category: {product.category}</p>
-                <p className="text-gray-600 font-semibold">${product.price.toFixed(2)}</p>
+                <p className="text-gray-600 font-semibold">
+                  ${product.price.toFixed(2)}
+                </p>
               </div>
               <div className="p-4">
-                <div className='flex'>
-
-                <button
-                  onClick={() => handleAddToCart(product.id)}
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
-                >
-                  Add to Cart
-                </button>
-                <button
-                  onClick={() => handleBuyNow(product.id)}
-                  className="w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
-                >
-                  Buy Now
-                </button>
+                <div className="flex">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(product.id)
+                    }}
+                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                  >
+                    Add to Cart
+                  </button>
+                  <button
+                    
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleBuyNow(product.id)
+                    }}
+                    className="w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                  >
+                    Buy Now
+                  </button>
                 </div>
               </div>
             </div>
@@ -173,9 +233,9 @@ export default function ProductsPage() {
         </div>
       </main>
 
-{/* Modal Overlay */}
-{selectedProduct && (
-        <div className="fixed top-0 left-0 w-full h-full bg-opacity-25 flex items-center justify-center">
+      {/* Modal Overlay */}
+      {selectedProduct && (
+        <div className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex items-center justify-center"style={{ backdropFilter: 'blur(10px)' }}>
           <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
             <button
               onClick={handleCloseModal}
@@ -195,7 +255,9 @@ export default function ProductsPage() {
                 />
               </svg>
             </button>
-            <h2 className="text-2xl text-gray-600 font-semibold mb-4">{selectedProduct.name}</h2>
+            <h2 className="text-2xl text-gray-600 font-semibold mb-4">
+              {selectedProduct.name}
+            </h2>
             <Image
               src={selectedProduct.imageUrl}
               alt={selectedProduct.name}
@@ -203,13 +265,16 @@ export default function ProductsPage() {
               height={300}
               className="w-full h-48 object-cover mb-4 rounded-md"
             />
-            <p className="text-gray-600 mb-2">Category: {selectedProduct.category}</p>
+            <p className="text-gray-600 mb-2">
+              Category: {selectedProduct.category}
+            </p>
             <p className="text-gray-600 font-semibold mb-4">
               ${selectedProduct.price.toFixed(2)}
             </p>
             <p className="text-gray-700 mb-4">
               {/* Replace with your product description */}
-              This is a sample product description. You can add more details here.
+              This is a sample product description. You can add more details
+              here.
             </p>
             <div className="flex flex-col sm:flex-row sm:space-x-2">
               <button
@@ -229,10 +294,11 @@ export default function ProductsPage() {
         </div>
       )}
 
-
       <footer className="py-8 px-4 sm:px-6 lg:px-8 bg-gray-100">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-gray-600">&copy; {new Date().getFullYear()} ShopSphere. All rights reserved.</p>
+          <p className="text-gray-600">
+            &copy; {new Date().getFullYear()} ShopSphere. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
