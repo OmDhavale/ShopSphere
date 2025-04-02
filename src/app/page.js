@@ -4,31 +4,55 @@
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react'; // Added useRef and useEffect
 import { useRouter } from 'next/navigation';
-
+import axios from 'axios';
+import ProductCard from './components/ProductCard'; // Import the ProductCard component
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const sidebarRef = useRef(null); // Create a ref for the sidebar
   const [showLoginPrompt, setShowLoginPrompt] = useState(false); // State for login prompt
   const router = useRouter();
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/api/getItems");
+        console.log(response.data.items);
+        if (Array.isArray(response.data.items)) {
+          setProducts(response.data.items);
+        } else {
+          console.log("API response is not an array", response.data);
+        }
+      } catch (err) {
+        console.log("Error fetching products", err);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  // Log `products` in another `useEffect` to see the updated state
+  useEffect(() => {
+    console.log("Updated Products:", products);
+  }, [products]);
+
   const handleShopNowClick = () => {
     //check if the localStorage has the credentials or not
     const localCredentials = localStorage.getItem("localCredentials");
     if (localCredentials == null) {
       setShowLoginPrompt(true); // Show the login prompt
     } else {
-       // Redirect to the products page
-       router.push("/products");
+      // Redirect to the products page
+      router.push("/products");
     }
   };
 
   const handleLoginRedirect = () => {
     setShowLoginPrompt(false); // Close the prompt
-    router.push('/account'); // Redirect to the account page
+    router.push("/account"); // Redirect to the account page
   };
 
   const handleClosePrompt = () => {
     setShowLoginPrompt(false);
-  }
+  };
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -41,11 +65,11 @@ export default function Home() {
     };
 
     if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside); // Use mousedown for better user experience
+      document.addEventListener("mousedown", handleClickOutside); // Use mousedown for better user experience
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isMenuOpen]);
 
@@ -155,23 +179,21 @@ export default function Home() {
         </div>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <Image
-              src="/product1.jpg"
-              alt="Product 1"
-              width={500}
-              height={300}
-              className="w-full h-48 object-cover"
+          {products.slice(0, 3).map((product, _id) => (
+            <ProductCard
+              key={_id}
+              image={product.image}
+              name={product.name}
+              category={product.category}
+              description={product.description}
+              price={product.price}
             />
-            <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Modern Desk Lamp
-              </h2>
-              <p className="text-gray-600">
-                Sleek and stylish design for your workspace.
-              </p>
-            </div>
+          ))}
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            {/* Use map function to call the component for each product */}
           </div>
+        </div>
+        {/* <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <Image
               src="/product1.jpg"
@@ -202,9 +224,9 @@ export default function Home() {
               <p className="text-gray-600">accessories</p>
             </div>
           </div>
-          {/* ... (rest of the main content) ... */}
-        </div>
-
+         
+        </div> */}
+        {/* ... (rest of the main content) ... */}
         <div className="mt-20 text-center">
           <h2 className="text-3xl font-semibold text-gray-900 mb-4">
             Featured Categories
