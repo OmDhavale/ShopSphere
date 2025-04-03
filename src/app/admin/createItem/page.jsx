@@ -4,13 +4,14 @@ import React from 'react'
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { useState } from "react";
+import LoadingIcons from 'react-loading-icons'
 const page = () => {
     const [name,setName] = useState("");
     const [description,setDescription] = useState("");
     const [price,setPrice] = useState("");
     const [category,setCategory] = useState("");
     const [image,setImage] = useState("");
-
+    const [loading,setLoading] = useState(false);
     const handleSubmit = (e) => {
         e.preventDefault();
         const reqBody = { name,description,price,category,image }
@@ -132,7 +133,15 @@ const page = () => {
               type="submit"
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" //w-full added.
             >
-              Create Item
+              {loading ? (
+                <LoadingIcons.BallTriangle
+                  stroke="#fff"
+                  strokeWidth={2}
+                  className="w-6 h-6 animate-spin"
+                />
+              ) : (
+                "Create Item"
+              )}
             </button>
             
           </div>

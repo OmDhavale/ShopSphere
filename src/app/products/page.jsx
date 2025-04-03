@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation'; // Import useRouter
 import axios from 'axios';
+import { Skeleton } from "@/components/ui/skeleton"
+import LoadingIcons from 'react-loading-icons'
 // import BuyComponent from '../product/[id]/BuyComponent'; // Import the BuyComponent
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,7 +28,8 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categories,setCategories] = useState(null);
    //Fetching product data
-
+  const [ loading, setLoading] = useState(true)
+  const [buttonLoading, setButtonLoading] = useState(false)
   const [products, setProducts] = useState([]);
 
    const localCredentials = localStorage.getItem("localCredentials");
@@ -46,6 +49,7 @@ export default function ProductsPage() {
           if (Array.isArray(response.data.items)) {
             setProducts(response.data.items);
             setCategories(response.data.items.map((item) => item.category));
+            setLoading(false);
           } else {
             console.log("API response is not an array", response.data);
           }
@@ -92,10 +96,13 @@ export default function ProductsPage() {
 
   const handleBuyNow = (product) => {
     // Implement your buy now logic here
-    console.log(product);
-console.log(typeof product._id, product._id);
+
+//     console.log(product);
+// console.log(typeof product._id, product._id);
 console.log("Navigating to:", `/product/${product._id}`);
+    
     router.push(`/product/${product._id}`);
+    
     // Redirect to the buy component with the selected product details
     // router.push({
     //   pathname: `/product/${product._id}`,
@@ -236,57 +243,83 @@ console.log("Navigating to:", `/product/${product._id}`);
         </div>
       </header>
 
-      <main className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {filteredProducts.map((product, _id) => (
-            <div
-              key={product._id}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
-              onClick={() => handleProductClick(product)}
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                width={500}
-                height={300}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                  {product.name}
-                </h2>
-                <p className="text-gray-600">Category: {product.category}</p>
-                <p className="text-gray-600 font-semibold">
-                  ₹{product.price.toFixed(2)}
-                </p>
-              </div>
-              <div className="p-4">
-                <div className="flex">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(product._id);
-                    }}
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
-                  >
-                    Add to Cart
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setProductToBuy(product);
-                      handleBuyNow(product);
-                      
-                    }}
-                    className="w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
-                  >
-                    Buy Now
-                  </button>
+      <main className="py-16 px-4 sm:px-6 lg:px-8 overflow-auto">
+        {!loading ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {filteredProducts.map((product, _id) => (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                  onClick={() => handleProductClick(product)}
+                >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    width={500}
+                    height={300}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-6">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                      {product.name}
+                    </h2>
+                    <p className="text-gray-600">
+                      Category: {product.category}
+                    </p>
+                    <p className="text-gray-600 font-semibold">
+                      ₹{product.price.toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(product._id);
+                        }}
+                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                      >
+                        Add to Cart
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setProductToBuy(product);
+                          setButtonLoading(true)
+                          handleBuyNow(product);
+                        }}
+                        className="w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                      >
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-col items-center justify-center w-full h-50%">
+              <p className="text-xl text-grey-400 font-semibold mb-4">
+                Getting your products ready...wait a moment
+              </p>
+              <div className="flex flex-row w-full items-center justify-center space-x-4 pt-10">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+              </div>
+              <div className="flex flex-row w-full items-center justify-center space-x-4 pt-10">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
               </div>
             </div>
-          ))}
-        </div>
+          </>
+        )}
       </main>
 
       {/* Modal Overlay */}
@@ -341,11 +374,12 @@ console.log("Navigating to:", `/product/${product._id}`);
               >
                 Add to Cart
               </button>
+              
               <button
-                onClick={() => handleBuyNow(selectedProduct.id)}
-                className="w-full sm:w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                onClick={() => handleBuyNow(selectedProduct.id) }
+                className={`w-full sm:w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300`}
               >
-                Buy Now
+               Buy Now
               </button>
             </div>
           </div>

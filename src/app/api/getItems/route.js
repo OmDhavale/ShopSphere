@@ -5,7 +5,7 @@ export async function GET ()  {
   await dbConnect(); // Connect to the database
   try {
     const items = await itemModel.find(); // Fetch all items from the database
-    console.log("Items fetched from database:", items); // Debugging
+    console.log("Items fetched from database at backend"); // Debugging
     return new Response(
       JSON.stringify({
         message: "Items fetched successfully",

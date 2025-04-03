@@ -1,5 +1,6 @@
 // app/page.jsx
 "use client";
+import { Skeleton } from "@/components/ui/skeleton"
 
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react'; // Added useRef and useEffect
@@ -12,6 +13,7 @@ export default function Home() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false); // State for login prompt
   const router = useRouter();
   const [products, setProducts] = useState([]);
+  const [loading, setLoading ] = useState(true); // State for loading
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -19,6 +21,7 @@ export default function Home() {
         console.log(response.data.items);
         if (Array.isArray(response.data.items)) {
           setProducts(response.data.items);
+          setLoading(false); // Set loading to false after fetching products
         } else {
           console.log("API response is not an array", response.data);
         }
@@ -178,21 +181,34 @@ export default function Home() {
           </a>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {products.slice(0, 3).map((product, _id) => (
-            <ProductCard
-              key={_id}
-              image={product.image}
-              name={product.name}
-              category={product.category}
-              description={product.description}
-              price={product.price}
-            />
-          ))}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            {/* Use map function to call the component for each product */}
-          </div>
-        </div>
+        {!loading ? (
+          <>
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+              {products.slice(0, 3).map((product, _id) => (
+                <ProductCard
+                  key={_id}
+                  image={product.image}
+                  name={product.name}
+                  category={product.category}
+                  description={product.description}
+                  price={product.price}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-row w-full items-center justify-center space-x-4 pt-10">
+              {/* <p className="text-2xl text-black">
+                  Loading product details...
+                </p> */}
+              <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+              <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+              <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+            </div>
+          </>
+        )}
+
         {/* <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <Image
