@@ -26,7 +26,18 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categories,setCategories] = useState(null);
    //Fetching product data
+
   const [products, setProducts] = useState([]);
+
+   const localCredentials = localStorage.getItem("localCredentials");
+  //convert localCredentials to JSON object
+  const parsedCredentials = JSON.parse(localCredentials);
+  // Static user data (replace with actual user data later)
+  const user = {
+    username: parsedCredentials.username,
+    email: parsedCredentials.email,
+  };
+
     useEffect(() => {
       const fetchProducts = async () => {
         try {
@@ -71,15 +82,7 @@ export default function ProductsPage() {
     };
   }, [isUserMenuOpen]);
   
-  const localCredentials = localStorage.getItem("localCredentials");
-  //convert localCredentials to JSON object
-  const parsedCredentials = JSON.parse(localCredentials);
-  // Static user data (replace with actual user data later)
-  const user = {
-    username: parsedCredentials.username,
-    email: parsedCredentials.email,
-  };
-
+ 
   const handleAddToCart = (productId) => {
     // Implement your add to cart logic here
     console.log(`Product ${productId} added to cart`);
@@ -90,28 +93,20 @@ export default function ProductsPage() {
   const handleBuyNow = (product) => {
     // Implement your buy now logic here
     console.log(product);
-    // return (
-    // <div>
-    //   <BuyComponent
-    //   image={product.image}
-    //   name={product.name}
-    //   category={product.category}
-    //   description={product.description}
-    //   price={product.price}
-    // />
-    // </div>
-    // );
+console.log(typeof product._id, product._id);
+console.log("Navigating to:", `/product/${product._id}`);
+    router.push(`/product/${product._id}`);
     // Redirect to the buy component with the selected product details
-    router.push({
-      pathname: `/product/${product._id}`,
-      query: {
-        image: product.image,
-        name: product.name,
-        category: product.category,
-        description: product.description,
-        price: product.price,
-      },
-    });
+    // router.push({
+    //   pathname: `/product/${product._id}`,
+    //   // query: {
+    //   //   //image: product.image,
+    //   //   name: product.name,
+    //   //   // category: product.category,
+    //   //   // description: product.description,
+    //   //   // price: product.price,
+    //   // },
+    // });
   };
 
   const handleProductClick = (product) => {

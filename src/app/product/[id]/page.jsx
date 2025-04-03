@@ -1,27 +1,51 @@
 // app/product/[id]/page.jsx
 "use client";
 
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { use, useEffect, useState } from "react";
 
 // export default function ProductDetails({ params }) {
-export default function ProductDetails() {
+export default function ProductDetails({ params }) {
   const router = useRouter();
+  console.log(params.id);
   const productId = params.id;
-  // const name = params.name;
-  // const category = params.category;
-  // const price = params.price;
-  // const image = params.image;
-  // const description = params.description;
+  const prodObj = {
+    productId: productId,
+  };
+  console.log("Product ID:", prodObj);
+  console.log(typeof prodObj);
 
-  // Replace with your actual product fetching logic
- 
-  if (!product) {
-    return <div>Product not found</div>;
-  }
+  // if (!productId) {
+  //   return <div>Product not found</div>;
+  // }
+
+  const [product, setProduct] = useState({});
+  
+    const fetchProduct = async () => {
+      try {
+        //get the item with productId from the api
+        // const response = await axios.get(`/api/getItems/${productId}`);
+        axios.post("/api/getItems/buy", prodObj, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((response) => {
+          console.log("Product fetched successfully:", response.data.item);
+          // Handle the response data as needed
+          setProduct(response.data.item);
+        }).catch((error) => {
+          console.error("Error fetching product", error);
+        });
+      } catch (err) {
+        console.log("Error fetching products", err);
+      }
+    };
+
 
   const handlePlaceOrder = () => {
     // Implement your place order logic here
-    console.log(`Order placed for product ${productId}`);
+    console.log(`Order placed for product ${product.name}`);
   };
 
   return (
