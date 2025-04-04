@@ -6,7 +6,10 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation'; // Import useRouter
 import axios from 'axios';
 import { Skeleton } from "@/components/ui/skeleton"
+
+import { toast, ToastContainer } from "react-toastify";
 import LoadingIcons from 'react-loading-icons'
+import EditProductForm from '../components/EditProductForm';
 // import BuyComponent from '../product/[id]/BuyComponent'; // Import the BuyComponent
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,6 +35,10 @@ export default function ProductsPage() {
   const [buttonLoading, setButtonLoading] = useState(false)
   const [products, setProducts] = useState([]);
   const [adminLogin, setAdminLogin ] = useState("user")
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+
    const localCredentials = localStorage.getItem("localCredentials");
   //convert localCredentials to JSON object
   const parsedCredentials = JSON.parse(localCredentials);
@@ -141,6 +148,37 @@ console.log("Navigating to:", `/product/${product._id}`);
     localStorage.removeItem("localCredentials");
     router.push("/"); // Redirect to the account page after logout
   } 
+  const handleCreate = () =>{
+    router.push("/admin/createItem")
+  }
+  const handleDelete = (product) => {
+    console.log(product._id)
+    const reqBody = { _id: product._id };
+    console.log(reqBody)
+    axios.post("/api/deleteItem",reqBody,{
+      headers:{
+        "Content-Type":"application/json",
+      }
+    }).then((response)=>{
+      console.log("Item deleted :", response.data);
+      toast.success("Item deleted successfully!");
+      //refresh page after this..
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000); // 2000 milliseconds = 2 second
+    }).catch((error)=>{
+      console.log("ERROR DELETING ITEM",error);
+      toast.error("Item deletion failed");
+    })  
+  }
+
+
+  const handleEdit = (product) => {
+    console.log("Editing product:", product);
+    setEditingProduct(product);
+    setIsEditing(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
       <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500">
@@ -152,7 +190,7 @@ console.log("Navigating to:", `/product/${product._id}`);
           <div className="flex items-center space-x-4">
             {adminLogin ?<>
             <button 
-              onClick={() => router.push("/admin/createItem")}
+              onClick={handleCreate}
               className="w-1/2 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300">
               Add new Product
             </button>
@@ -194,37 +232,7 @@ console.log("Navigating to:", `/product/${product._id}`);
                     {category}
                   </option>
                 ))}
-              {/* <option
-                value="lighting"
-                className="p-2 block hover:bg-purple-700/50"
-              >
-                Lighting
-              </option>
-              <option
-                value="electronics"
-                className="p-2 block hover:bg-purple-700/50"
-              >
-                Electronics
-              </option>
-              <option
-                value="accessories"
-                className="p-2 block hover:bg-purple-700/50"
-              >
-                Accessories
-              </option>
-              <option
-                value="appliances"
-                className="p-2 block hover:bg-purple-700/50"
-              >
-                Appliances
-              </option>
-              <option
-                value="furniture"
-                className="p-2 block hover:bg-purple-700/50"
-              >
-                Furniture
-              </option> */}
-              {/* </div> */}
+              
             </select>
 
             <div className="relative">
@@ -265,6 +273,7 @@ console.log("Navigating to:", `/product/${product._id}`);
       </header>
 
       <main className="py-16 px-4 sm:px-6 lg:px-8 overflow-auto">
+        <ToastContainer/>
         {!loading ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -296,19 +305,19 @@ console.log("Navigating to:", `/product/${product._id}`);
                     {adminLogin === "admin" ? (
                       <div className="flex space-x-2 mb-2">
                         <button
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          //   handleAddToCart(product._id);
-                          // }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(product);
+                          }}
                           className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
                         >
                           Edit Item
                         </button>
                         <button
-                          // onClick={(e) => {
-                          //   e.stopPropagation();
-                          //   handleAddToCart(product._id);
-                          // }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(product);
+                          }}
                           className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
                         >
                           Delete Item
@@ -367,6 +376,17 @@ console.log("Navigating to:", `/product/${product._id}`);
         )}
       </main>
 
+      {isEditing && editingProduct && (
+        <EditProductForm 
+          product={editingProduct} 
+          onClose={() => setIsEditing(false)} 
+          onUpdate={(updatedProduct) => {
+            // update your products list state here if needed
+            setIsEditing(false);
+          }}
+        />
+      )}
+
       {/* Modal Overlay */}
       {selectedProduct && (
         <div
@@ -413,6 +433,30 @@ console.log("Navigating to:", `/product/${product._id}`);
               {selectedProduct.description}
             </p>
             <div className="flex flex-col sm:flex-row sm:space-x-2">
+              {adminLogin === "admin" ? (
+                      <div className="flex space-x-2 mb-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(selectedProduct);
+                          }}
+                          className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                        >
+                          Edit Item
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(selectedProduct);
+                          }}
+                          className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                        >
+                          Delete Item
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
               <button
                 onClick={() => handleAddToCart(selectedProduct.id)}
                 className="w-full sm:w-1/2 mb-2 sm:mb-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"

@@ -4,9 +4,12 @@ import React from 'react'
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 import LoadingIcons from 'react-loading-icons'
+
 const page = () => {
     const [name,setName] = useState("");
+    const router = useRouter();
     const [description,setDescription] = useState("");
     const [price,setPrice] = useState("");
     const [category,setCategory] = useState("");

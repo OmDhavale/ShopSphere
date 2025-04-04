@@ -1,7 +1,7 @@
 //Declaring route for deleting an item from db based on id
 import {  dbConnect } from "../../../dbConfig/dbConnect"
 import itemModel from "../../../Models/ItemModel/item.model.js";
-export async function DELETE(req){
+export async function POST(req){
     const reqBody = await req.json();
     console.log("Received request body:", reqBody); // Debugging
     await dbConnect(); // Connect to the database
