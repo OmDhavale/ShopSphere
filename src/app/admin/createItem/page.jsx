@@ -27,6 +27,7 @@ const page = () => {
             setPrice("");
             setCategory("");
             setImage("");
+            router.push("/products")
 
         }).catch((error)=>{
             console.log("ERROR CREATING ITEM",error);

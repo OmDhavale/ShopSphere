@@ -31,10 +31,16 @@ export default function ProductsPage() {
   const [ loading, setLoading] = useState(true)
   const [buttonLoading, setButtonLoading] = useState(false)
   const [products, setProducts] = useState([]);
-
+  const [adminLogin, setAdminLogin ] = useState("user")
    const localCredentials = localStorage.getItem("localCredentials");
   //convert localCredentials to JSON object
   const parsedCredentials = JSON.parse(localCredentials);
+      const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
+      const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+      
+console.log("adminCredentials: ",adminEmail, adminUsername)
+console.log("localCredentials: ",parsedCredentials.email, parsedCredentials.username)
+ 
   // Static user data (replace with actual user data later)
   const user = {
     username: parsedCredentials.username,
@@ -42,8 +48,16 @@ export default function ProductsPage() {
   };
 
     useEffect(() => {
+
       const fetchProducts = async () => {
+
+          if(parsedCredentials.email === adminEmail && parsedCredentials.username === adminUsername){
+              console.log("Admin logged in successfully");
+              setAdminLogin("admin")
+            }
+
         try {
+
           const response = await axios.get("/api/getItems");
           console.log(response.data.items);
           if (Array.isArray(response.data.items)) {
@@ -136,6 +150,13 @@ console.log("Navigating to:", `/product/${product._id}`);
           </a>
 
           <div className="flex items-center space-x-4">
+            {adminLogin ?<>
+            <button 
+              onClick={() => router.push("/admin/createItem")}
+              className="w-1/2 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300">
+              Add new Product
+            </button>
+            </>:<></>}
             <input
               type="text"
               placeholder="Search items..."
@@ -272,7 +293,31 @@ console.log("Navigating to:", `/product/${product._id}`);
                     </p>
                   </div>
                   <div className="p-4">
-                    <div className="flex">
+                    {adminLogin === "admin" ? (
+                      <div className="flex space-x-2 mb-2">
+                        <button
+                          // onClick={(e) => {
+                          //   e.stopPropagation();
+                          //   handleAddToCart(product._id);
+                          // }}
+                          className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                        >
+                          Edit Item
+                        </button>
+                        <button
+                          // onClick={(e) => {
+                          //   e.stopPropagation();
+                          //   handleAddToCart(product._id);
+                          // }}
+                          className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                        >
+                          Delete Item
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                    <div className="flex space-x-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -286,10 +331,10 @@ console.log("Navigating to:", `/product/${product._id}`);
                         onClick={(e) => {
                           e.stopPropagation();
                           setProductToBuy(product);
-                          setButtonLoading(true)
+                          setButtonLoading(true);
                           handleBuyNow(product);
                         }}
-                        className="w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                        className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
                       >
                         Buy Now
                       </button>
@@ -374,16 +419,16 @@ console.log("Navigating to:", `/product/${product._id}`);
               >
                 Add to Cart
               </button>
-              
+
               <button
                 onClick={() => {
                   setProductToBuy(selectedProduct);
-                  setButtonLoading(true)
-                  handleBuyNow(selectedProduct)
-                } }
+                  setButtonLoading(true);
+                  handleBuyNow(selectedProduct);
+                }}
                 className={`w-full sm:w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300`}
               >
-               Buy Now
+                Buy Now
               </button>
             </div>
           </div>
