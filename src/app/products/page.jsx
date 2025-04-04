@@ -376,7 +376,11 @@ console.log("Navigating to:", `/product/${product._id}`);
               </button>
               
               <button
-                onClick={() => handleBuyNow(selectedProduct.id) }
+                onClick={() => {
+                  setProductToBuy(selectedProduct);
+                  setButtonLoading(true)
+                  handleBuyNow(selectedProduct)
+                } }
                 className={`w-full sm:w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300`}
               >
                Buy Now
