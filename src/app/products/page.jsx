@@ -247,7 +247,7 @@ console.log("Navigating to:", `/product/${product._id}`);
               >
                 🛒Cart
               </button>
-              {adminLogin ? (
+              {adminLogin === "admin" ? (
                 <>
                   <button
                     onClick={handleCreate}
@@ -289,9 +289,13 @@ console.log("Navigating to:", `/product/${product._id}`);
                 All
               </option>
               {categories &&
-                categories.map((category, index) => (
+                [
+                  ...new Map(
+                    categories.map((cat) => [cat.toLowerCase(), cat])
+                  ).values(),
+                ].map((category, index) => (
                   <option
-                    key={category}
+                    key={index}
                     value={category}
                     className="p-2 block hover:bg-purple-700/50"
                   >
@@ -537,6 +541,9 @@ console.log("Navigating to:", `/product/${product._id}`);
           style={{ backdropFilter: "blur(10px)" }}
         >
           <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+            <h2 className="text-2xl text-gray-600 font-semibold mb-4">
+              {selectedProduct.name}
+            </h2>
             <button
               onClick={handleCloseModal}
               className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
@@ -555,9 +562,6 @@ console.log("Navigating to:", `/product/${product._id}`);
                 />
               </svg>
             </button>
-            <h2 className="text-2xl text-gray-600 font-semibold mb-4">
-              {selectedProduct.name}
-            </h2>
             <img
               src={selectedProduct.image}
               alt={selectedProduct.name}
