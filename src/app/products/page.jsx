@@ -37,8 +37,8 @@ export default function ProductsPage() {
   const [adminLogin, setAdminLogin ] = useState("user")
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-
-
+  const [cartItems, setCartItems] = useState([]);
+  const [showCart, setShowCart] = useState("false");
    const localCredentials = localStorage.getItem("localCredentials");
   //convert localCredentials to JSON object
   const parsedCredentials = JSON.parse(localCredentials);
@@ -108,12 +108,12 @@ console.log("localCredentials: ",parsedCredentials.email, parsedCredentials.user
   }, [isUserMenuOpen]);
   
  
-  const handleAddToCart = (productId) => {
-    // Implement your add to cart logic here
-    console.log(`Product ${productId} added to cart`);
-    // You might want to use a state management solution or context API
-    // to manage the cart state.
-  };
+  // const handleAddToCart = (productId) => {
+  //   // Implement your add to cart logic here
+  //   console.log(`Product ${productId} added to cart`);
+  //   // You might want to use a state management solution or context API
+  //   // to manage the cart state.
+  // };
 
   const handleBuyNow = (product) => {
     // Implement your buy now logic here
@@ -142,6 +142,9 @@ console.log("Navigating to:", `/product/${product._id}`);
   }
   const handleCloseModal = () => {
     setSelectedProduct(null);
+  };
+  const handleCloseCart = () => {
+    setShowCart("false");
   };
   const handleLogout = () => {
     // Clear local storage and redirect to login page
@@ -179,6 +182,55 @@ console.log("Navigating to:", `/product/${product._id}`);
     setIsEditing(true);
   };
 
+
+ const addToCart = (product) => {
+   console.log("Product to be added: ", product);
+   const cartItem = {
+     email: parsedCredentials.email, // or userId if you store it
+     productId: product._id,
+     quantity: 1, // default quantity
+   };
+
+   axios
+     .post("/api/addToCart", cartItem, {
+       headers: {
+         "Content-Type": "application/json",
+       },
+     })
+     .then((response) => {
+       console.log("Item added to cart: ", response.data);
+       toast.success("Item added to cart successfully!");
+     })
+     .catch((error) => {
+       console.log("ERROR ADDING ITEM TO CART", error);
+       const errMsg =
+         error?.response?.data?.message || "Item addition to cart failed";
+       toast.error(errMsg);
+     });
+ };
+
+
+ const fetchCart = async () => {
+  try {
+    axios.post("/api/getMyCart", {
+      email: parsedCredentials.email,
+    }).then((res)=>{
+      
+    console.log("Cart items:", res.data.cart.items);
+
+    setCartItems(res.data.cart.items);
+    setShowCart("true");
+    console.log(showCart);
+    console.log(cartItems.length);
+    toast.success("Cart loaded successfully!");
+    }).catch((err)=>{
+      toast.error("Failed to load cart",err);
+    });
+
+  } catch (err) {
+    toast.error("Failed to load cart");
+  }
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
       <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500">
@@ -188,13 +240,25 @@ console.log("Navigating to:", `/product/${product._id}`);
           </a>
 
           <div className="flex items-center space-x-4">
-            {adminLogin ?<>
-            <button 
-              onClick={handleCreate}
-              className="w-1/2 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300">
-              Add new Product
+            {adminLogin ? (
+              <>
+                <button
+                  onClick={handleCreate}
+                  className="w-1/2 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                >
+                  Add new Product
+                </button>
+              </>
+            ) : (
+              <></>
+            )}
+
+            <button
+              onClick={fetchCart}
+              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+            >
+              🛒 My Cart
             </button>
-            </>:<></>}
             <input
               type="text"
               placeholder="Search items..."
@@ -232,7 +296,6 @@ console.log("Navigating to:", `/product/${product._id}`);
                     {category}
                   </option>
                 ))}
-              
             </select>
 
             <div className="relative">
@@ -273,7 +336,7 @@ console.log("Navigating to:", `/product/${product._id}`);
       </header>
 
       <main className="py-16 px-4 sm:px-6 lg:px-8 overflow-auto">
-        <ToastContainer/>
+        <ToastContainer />
         {!loading ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -330,7 +393,7 @@ console.log("Navigating to:", `/product/${product._id}`);
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleAddToCart(product._id);
+                          addToCart(product);
                         }}
                         className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
                       >
@@ -377,9 +440,9 @@ console.log("Navigating to:", `/product/${product._id}`);
       </main>
 
       {isEditing && editingProduct && (
-        <EditProductForm 
-          product={editingProduct} 
-          onClose={() => setIsEditing(false)} 
+        <EditProductForm
+          product={editingProduct}
+          onClose={() => setIsEditing(false)}
           onUpdate={(updatedProduct) => {
             // update your products list state here if needed
             setIsEditing(false);
@@ -388,6 +451,84 @@ console.log("Navigating to:", `/product/${product._id}`);
       )}
 
       {/* Modal Overlay */}
+      {showCart === "true" ? (
+        <div
+          className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex flex-col items-center justify-center p-4"
+          style={{ backdropFilter: "blur(10px)" }}
+        >
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative">
+            <button
+              onClick={handleCloseCart}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">
+              🛒 My Cart
+            </h2>
+
+            {cartItems.length === 0 ? (
+              <p className="text-center text-gray-600">Your cart is empty.</p>
+            ) : (
+              <div className="space-y-4">
+                {cartItems.map(
+                  (items, index) =>
+                    items.productId && (
+                      <div
+                        key={items._id || index}
+                        className="bg-gray-50 p-4 rounded-lg flex items-center justify-between"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <img
+                            src={items.productId.image}
+                            alt={items.productId.name}
+                            className="w-16 h-16 object-cover rounded-md"
+                          />
+                          <div>
+                            <h3 className="text-lg font-medium text-gray-800">
+                              {items.productId.name}
+                            </h3>
+                            <p className="text-sm text-gray-600 line-clamp-2">
+                              {items.productId.description}
+                            </p>
+                            <p className="text-gray-800 font-semibold mt-1">
+                              ₹ {items.productId.price}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Quantity: {items.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                )}
+              </div>
+            )}
+            <div className="mt-6 flex justify-end">
+              {cartItems.length > 0 && (
+                <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+                  Checkout
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+
       {selectedProduct && (
         <div
           className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex items-center justify-center"
@@ -434,31 +575,31 @@ console.log("Navigating to:", `/product/${product._id}`);
             </p>
             <div className="flex flex-col sm:flex-row sm:space-x-2">
               {adminLogin === "admin" ? (
-                      <div className="flex space-x-2 mb-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(selectedProduct);
-                          }}
-                          className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
-                        >
-                          Edit Item
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(selectedProduct);
-                          }}
-                          className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
-                        >
-                          Delete Item
-                        </button>
-                      </div>
-                    ) : (
-                      <></>
-                    )}
+                <div className="flex space-x-2 mb-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(selectedProduct);
+                    }}
+                    className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                  >
+                    Edit Item
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(selectedProduct);
+                    }}
+                    className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                  >
+                    Delete Item
+                  </button>
+                </div>
+              ) : (
+                <></>
+              )}
               <button
-                onClick={() => handleAddToCart(selectedProduct.id)}
+                onClick={() => addToCart(selectedProduct)}
                 className="w-full sm:w-1/2 mb-2 sm:mb-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
               >
                 Add to Cart
