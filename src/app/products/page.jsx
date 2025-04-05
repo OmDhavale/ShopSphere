@@ -240,25 +240,27 @@ console.log("Navigating to:", `/product/${product._id}`);
           </a>
 
           <div className="flex items-center space-x-4">
-            {adminLogin ? (
-              <>
-                <button
-                  onClick={handleCreate}
-                  className="w-1/2 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
-                >
-                  Add new Product
-                </button>
-              </>
-            ) : (
-              <></>
-            )}
+            <div className="flex flex-row space-x-4">
+              <button
+                onClick={fetchCart}
+                className="w-full bg-gradient-to-r from-indigo-500 to-indigo-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+              >
+                🛒Cart
+              </button>
+              {adminLogin ? (
+                <>
+                  <button
+                    onClick={handleCreate}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                  >
+                    + Product
+                  </button>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
 
-            <button
-              onClick={fetchCart}
-              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
-            >
-              🛒 My Cart
-            </button>
             <input
               type="text"
               placeholder="Search items..."
