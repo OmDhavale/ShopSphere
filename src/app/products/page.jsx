@@ -8,7 +8,8 @@ import axios from 'axios';
 import { Skeleton } from "@/components/ui/skeleton"
 
 import { toast, ToastContainer } from "react-toastify";
-import LoadingIcons from 'react-loading-icons'
+import LoadingIcons from "react-loading-icons";
+
 import EditProductForm from '../components/EditProductForm';
 // import BuyComponent from '../product/[id]/BuyComponent'; // Import the BuyComponent
 export default function ProductsPage() {
@@ -114,6 +115,10 @@ console.log("localCredentials: ",parsedCredentials.email, parsedCredentials.user
   //   // You might want to use a state management solution or context API
   //   // to manage the cart state.
   // };
+const [loadingId, setLoadingId] = useState(null);
+const [addcartLoadingId, setAddCartLoadingId] = useState(null);
+const [deleteLoadingId, setDeleteLoadingId] = useState(null);
+const [editLoadingId, setEditLoadingId] = useState(null);
 
   const handleBuyNow = (product) => {
     // Implement your buy now logic here
@@ -121,20 +126,10 @@ console.log("localCredentials: ",parsedCredentials.email, parsedCredentials.user
 //     console.log(product);
 // console.log(typeof product._id, product._id);
 console.log("Navigating to:", `/product/${product._id}`);
-    
+setLoadingId(product._id);
+    //setButtonLoading(true)
+    console.log(buttonLoading)
     router.push(`/product/${product._id}`);
-    
-    // Redirect to the buy component with the selected product details
-    // router.push({
-    //   pathname: `/product/${product._id}`,
-    //   // query: {
-    //   //   //image: product.image,
-    //   //   name: product.name,
-    //   //   // category: product.category,
-    //   //   // description: product.description,
-    //   //   // price: product.price,
-    //   // },
-    // });
   };
 
   const handleProductClick = (product) => {
@@ -144,6 +139,7 @@ console.log("Navigating to:", `/product/${product._id}`);
     setSelectedProduct(null);
   };
   const handleCloseCart = () => {
+    
     setShowCart("false");
   };
   const handleLogout = () => {
@@ -158,6 +154,7 @@ console.log("Navigating to:", `/product/${product._id}`);
     console.log(product._id)
     const reqBody = { _id: product._id };
     console.log(reqBody)
+    setDeleteLoadingId(product._id);
     axios.post("/api/deleteItem",reqBody,{
       headers:{
         "Content-Type":"application/json",
@@ -165,6 +162,7 @@ console.log("Navigating to:", `/product/${product._id}`);
     }).then((response)=>{
       console.log("Item deleted :", response.data);
       toast.success("Item deleted successfully!");
+      setDeleteLoadingId(null);
       //refresh page after this..
       setTimeout(() => {
         window.location.reload();
@@ -177,6 +175,7 @@ console.log("Navigating to:", `/product/${product._id}`);
 
 
   const handleEdit = (product) => {
+    setEditLoadingId(product._id);
     console.log("Editing product:", product);
     setEditingProduct(product);
     setIsEditing(true);
@@ -190,7 +189,7 @@ console.log("Navigating to:", `/product/${product._id}`);
      productId: product._id,
      quantity: 1, // default quantity
    };
-
+   setAddCartLoadingId(product._id);
    axios
      .post("/api/addToCart", cartItem, {
        headers: {
@@ -200,6 +199,7 @@ console.log("Navigating to:", `/product/${product._id}`);
      .then((response) => {
        console.log("Item added to cart: ", response.data);
        toast.success("Item added to cart successfully!");
+        setAddCartLoadingId(null);
      })
      .catch((error) => {
        console.log("ERROR ADDING ITEM TO CART", error);
@@ -243,7 +243,7 @@ console.log("Navigating to:", `/product/${product._id}`);
             <div className="flex flex-row space-x-4">
               <button
                 onClick={fetchCart}
-                className="w-full bg-gradient-to-r from-indigo-500 to-indigo-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                className="w-full bg-gradient-to-r from-indigo-500 to-indigo-700 text-white font-semibold py-2 px-4 rounded-xl hover:from-indigo-700 hover:to-indigo-500 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
               >
                 🛒Cart
               </button>
@@ -251,7 +251,7 @@ console.log("Navigating to:", `/product/${product._id}`);
                 <>
                   <button
                     onClick={handleCreate}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl  hover:from-blue-700 hover:to-blue-500 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
                   >
                     + Product
                   </button>
@@ -345,11 +345,11 @@ console.log("Navigating to:", `/product/${product._id}`);
         <ToastContainer />
         {!loading ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
               {filteredProducts.map((product, _id) => (
                 <div
                   key={product._id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
                   onClick={() => handleProductClick(product)}
                 >
                   <img
@@ -378,7 +378,7 @@ console.log("Navigating to:", `/product/${product._id}`);
                             e.stopPropagation();
                             handleEdit(product);
                           }}
-                          className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                          className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:from-green-600 hover:to-green-400 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
                         >
                           Edit Item
                         </button>
@@ -387,9 +387,19 @@ console.log("Navigating to:", `/product/${product._id}`);
                             e.stopPropagation();
                             handleDelete(product);
                           }}
-                          className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                          className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:from-red-700 hover:to-red-500 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
                         >
-                          Delete Item
+                          {deleteLoadingId === product._id ? (
+                            <div className="flex items-center justify-center">
+                              <LoadingIcons.TailSpin
+                                stroke="#fff"
+                                strokeWidth={2}
+                                className="w-6 h-6 animate-spin"
+                              />
+                            </div>
+                          ) : (
+                            "Delete Item"
+                          )}
                         </button>
                       </div>
                     ) : (
@@ -401,9 +411,19 @@ console.log("Navigating to:", `/product/${product._id}`);
                           e.stopPropagation();
                           addToCart(product);
                         }}
-                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:from-pink-500 hover:to-purple-500 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
                       >
-                        Add to Cart
+                        {addcartLoadingId === product._id ? (
+                          <div className="flex items-center justify-center">
+                            <LoadingIcons.TailSpin
+                              stroke="#fff"
+                              strokeWidth={2}
+                              className="w-6 h-6 animate-spin"
+                            />
+                          </div>
+                        ) : (
+                          "Add to Cart"
+                        )}
                       </button>
                       <button
                         onClick={(e) => {
@@ -412,9 +432,31 @@ console.log("Navigating to:", `/product/${product._id}`);
                           setButtonLoading(true);
                           handleBuyNow(product);
                         }}
-                        className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                        disabled={loadingId === product._id}
+                        className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:from-yellow-600 hover:to-yellow-400 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
                       >
-                        Buy Now
+                        {loadingId === product._id ? (
+                          <div className="flex items-center justify-center">
+                            <LoadingIcons.TailSpin
+                              stroke="#fff"
+                              strokeWidth={2}
+                              className="w-6 h-6 animate-spin"
+                            />
+                          </div>
+                        ) : (
+                          <>Buy Now</>
+                        )}
+
+                        {/* Buy Now
+                        {buttonLoading ? (
+                          <LoadingIcons.BallTriangle
+                            stroke="#fff"
+                            strokeWidth={2}
+                            className="w-6 h-6 animate-spin"
+                          />
+                        ) : (
+                          "Buy Now"
+                        )} */}
                       </button>
                     </div>
                   </div>
@@ -614,7 +656,7 @@ console.log("Navigating to:", `/product/${product._id}`);
               <button
                 onClick={() => {
                   setProductToBuy(selectedProduct);
-                  setButtonLoading(true);
+
                   handleBuyNow(selectedProduct);
                 }}
                 className={`w-full sm:w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300`}
@@ -635,5 +677,7 @@ console.log("Navigating to:", `/product/${product._id}`);
       </footer>
     </div>
   );
+
+  
 }
 
