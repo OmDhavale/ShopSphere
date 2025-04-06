@@ -144,20 +144,29 @@ export default function Home() {
         } md:hidden`}
       >
         <div className="p-4">
-          <nav className="flex flex-col space-y-4">
+          <nav className="flex flex-col space-y-4 ">
             <a
               onClick={handleShopNowClick}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-gray-900 cursor-pointer"
             >
               Products
             </a>
-            <a href="/categories" className="text-gray-600 hover:text-gray-900">
+            <a
+              href="/categories"
+              className="text-gray-600 hover:text-gray-900 cursor-pointer"
+            >
               Categories
             </a>
-            <a href="/cart" className="text-gray-600 hover:text-gray-900">
+            <a
+              href="/cart"
+              className="text-gray-600 hover:text-gray-900 cursor-pointer"
+            >
               Cart
             </a>
-            <a href="/account" className="text-gray-600 hover:text-gray-900">
+            <a
+              href="/account"
+              className="text-gray-600 hover:text-gray-900 cursor-pointer"
+            >
               Account
             </a>
           </nav>
@@ -175,7 +184,7 @@ export default function Home() {
           </p>
           <a
             onClick={handleShopNowClick}
-            className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-6 rounded-full hover:shadow-lg transition-all duration-300"
+            className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-6 rounded-full hover:from-pink-500 hover:to-purple-500 hover:shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-500 ease-in-out"
           >
             Shop Now
           </a>
