@@ -222,7 +222,7 @@ setLoadingId(product._id);
     setShowCart("true");
     console.log(showCart);
     console.log(cartItems.length);
-    toast.success("Cart loaded successfully!");
+    // toast.success("Cart loaded successfully!");
     }).catch((err)=>{
       toast.error("Failed to load cart",err);
     });
@@ -255,17 +255,21 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
 
 
   }
-
+  
   const updateCartQuantity = async (productId, newQuantity) => {
     try {
-      const response = await axios.put("/api/updateCartQuantity", {
+      axios.put("/api/updateCartQuantity", {
         email: parsedCredentials.email,
-        productId,
+        productId: productId,
         quantity: newQuantity,
+      }).then((response)=>{
+        // toast.success("Cart updated!");
+        fetchCart();
+        console.log(response.data.cart.items);
+      }).catch((error)=>{
+        console.error("Error updating cart quantity", error);
+        toast.error("Failed to update quantity");
       });
-
-      toast.success("Cart updated!");
-      setCartItems(response.data.cart.items);
     } catch (error) {
       console.error("Error updating cart quantity", error);
       toast.error("Failed to update quantity");
@@ -407,7 +411,12 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                     <p className="text-gray-600">
                       Category: {product.category}
                     </p>
-                    <p className="text-gray-600 font-semibold">
+                    {/* for discount strike-through */}
+                    <p className="text-red-600 line-through font-semibold"> 
+                      ₹{(product.price*1.2).toFixed(2)}
+                    </p>
+                    {/* for actual price display */}
+                    <p className="text-green-700 font-semibold text-xl">
                       ₹{product.price.toFixed(2)}
                     </p>
                   </div>
@@ -567,7 +576,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
             <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">
               🛒 My Cart
             </h2>
-          
+
             {cartItems == null ? (
               <p className="text-center text-gray-600">Your cart is empty.</p>
             ) : (
@@ -597,15 +606,27 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                             </p>
                             <div className="flex items-center space-x-2 mt-2">
                               <button
-                                onClick={() => updateCartQuantity(items.productId._id, items.quantity - 1)}
+                                onClick={() =>
+                                  updateCartQuantity(
+                                    items.productId,
+                                    items.quantity - 1
+                                  )
+                                }
                                 disabled={items.quantity <= 1}
                                 className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
                               >
                                 -
                               </button>
-                              <span className="text-gray-700">{items.quantity}</span>
+                              <span className="text-gray-700">
+                                {items.quantity}
+                              </span>
                               <button
-                                onClick={() => updateCartQuantity(items.productId._id, items.quantity + 1)}
+                                onClick={() =>
+                                  updateCartQuantity(
+                                    items.productId,
+                                    items.quantity + 1
+                                  )
+                                }
                                 className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                               >
                                 +
