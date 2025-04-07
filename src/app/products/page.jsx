@@ -231,6 +231,47 @@ setLoadingId(product._id);
     toast.error("Failed to load cart");
   }
 };
+const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
+  const handleRemoveFromCart = (productId) => {
+    const prodId = productId._id;
+    const email = parsedCredentials.email;
+    console.log("Removing product from cart:", prodId, email);
+    const reqBody = { email, productId: prodId };
+    setRemoveCartLoadingId(productId._id);
+    axios.delete("/api/removeFromCart", {
+      data: reqBody,
+    })
+      .then((response) => {
+        console.log("Item removed from cart:", response.data);
+        toast.success("Item removed from cart successfully!");
+        // Refresh the cart items after removal
+        setRemoveCartLoadingId(null);
+        fetchCart();
+      })
+      .catch((error) => {
+        console.log("ERROR REMOVING ITEM FROM CART", error);
+        toast.error("Failed to remove item from cart");
+      });
+
+
+  }
+
+  const updateCartQuantity = async (productId, newQuantity) => {
+    try {
+      const response = await axios.put("/api/updateCartQuantity", {
+        email: parsedCredentials.email,
+        productId,
+        quantity: newQuantity,
+      });
+
+      toast.success("Cart updated!");
+      setCartItems(response.data.cart.items);
+    } catch (error) {
+      console.error("Error updating cart quantity", error);
+      toast.error("Failed to update quantity");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
       <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500">
@@ -393,7 +434,7 @@ setLoadingId(product._id);
                             <div className="flex items-center justify-center">
                               <LoadingIcons.TailSpin
                                 stroke="#fff"
-                                strokeWidth={2}
+                                strokeWidth={4}
                                 className="w-6 h-6 animate-spin"
                               />
                             </div>
@@ -417,7 +458,7 @@ setLoadingId(product._id);
                           <div className="flex items-center justify-center">
                             <LoadingIcons.TailSpin
                               stroke="#fff"
-                              strokeWidth={2}
+                              strokeWidth={4}
                               className="w-6 h-6 animate-spin"
                             />
                           </div>
@@ -439,7 +480,7 @@ setLoadingId(product._id);
                           <div className="flex items-center justify-center">
                             <LoadingIcons.TailSpin
                               stroke="#fff"
-                              strokeWidth={2}
+                              strokeWidth={4}
                               className="w-6 h-6 animate-spin"
                             />
                           </div>
@@ -526,8 +567,8 @@ setLoadingId(product._id);
             <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">
               🛒 My Cart
             </h2>
-
-            {cartItems.length === 0 ? (
+          
+            {cartItems == null ? (
               <p className="text-center text-gray-600">Your cart is empty.</p>
             ) : (
               <div className="space-y-4">
@@ -554,23 +595,52 @@ setLoadingId(product._id);
                             <p className="text-gray-800 font-semibold mt-1">
                               ₹ {items.productId.price}
                             </p>
-                            <p className="text-xs text-gray-500">
-                              Quantity: {items.quantity}
-                            </p>
+                            <div className="flex items-center space-x-2 mt-2">
+                              <button
+                                onClick={() => updateCartQuantity(items.productId._id, items.quantity - 1)}
+                                disabled={items.quantity <= 1}
+                                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                              >
+                                -
+                              </button>
+                              <span className="text-gray-700">{items.quantity}</span>
+                              <button
+                                onClick={() => updateCartQuantity(items.productId._id, items.quantity + 1)}
+                                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                              >
+                                +
+                              </button>
+                            </div>
                           </div>
                         </div>
+                        <button
+                          onClick={() => handleRemoveFromCart(items.productId)}
+                          className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-1 rounded"
+                        >
+                          {removeCartLoadingId === items.productId._id ? (
+                            <div className="flex items-center justify-center">
+                              <LoadingIcons.TailSpin
+                                stroke="#fff"
+                                strokeWidth={4}
+                                className="w-6 h-6 animate-spin"
+                              />
+                            </div>
+                          ) : (
+                            <>Remove </>
+                          )}
+                        </button>
                       </div>
                     )
                 )}
               </div>
             )}
-            <div className="mt-6 flex justify-end">
+            {/* <div className="mt-6 flex justify-end">
               {cartItems.length > 0 && (
                 <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
                   Checkout
                 </button>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       ) : (
