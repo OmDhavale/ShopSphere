@@ -46,8 +46,8 @@ export default function ProductsPage() {
       const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
       const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
       
-console.log("adminCredentials: ",adminEmail, adminUsername)
-console.log("localCredentials: ",parsedCredentials.email, parsedCredentials.username)
+// console.log("adminCredentials: ",adminEmail, adminUsername)
+// console.log("localCredentials: ",parsedCredentials.email, parsedCredentials.username)
  
   // Static user data (replace with actual user data later)
   const user = {
@@ -131,7 +131,13 @@ setLoadingId(product._id);
     console.log(buttonLoading)
     router.push(`/product/${product._id}`);
   };
-
+const handleBuyNowCart = (items) =>{
+  console.log("Navigating to:", `/product/${items.productId._id}`);
+  setLoadingId(items.productId._id);
+  //setButtonLoading(true)
+  console.log(buttonLoading);
+  router.push(`/product/${items.productId._id}`);
+}
   const handleProductClick = (product) => {
     setSelectedProduct(product);
   }
@@ -412,8 +418,8 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                       Category: {product.category}
                     </p>
                     {/* for discount strike-through */}
-                    <p className="text-red-600 line-through font-semibold"> 
-                      ₹{(product.price*1.2).toFixed(2)}
+                    <p className="text-red-600 line-through font-semibold">
+                      ₹{(product.price * 1.2).toFixed(2)}
                     </p>
                     {/* for actual price display */}
                     <p className="text-green-700 font-semibold text-xl">
@@ -634,22 +640,58 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                             </div>
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleRemoveFromCart(items.productId)}
-                          className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-1 rounded"
-                        >
-                          {removeCartLoadingId === items.productId._id ? (
-                            <div className="flex items-center justify-center">
-                              <LoadingIcons.TailSpin
-                                stroke="#fff"
-                                strokeWidth={4}
-                                className="w-6 h-6 animate-spin"
-                              />
-                            </div>
-                          ) : (
-                            <>Remove </>
-                          )}
-                        </button>
+                        <div className="flex flex-col">
+                          <button
+                            onClick={() =>
+                              handleRemoveFromCart(items.productId)
+                            }
+                            className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-1 rounded"
+                          >
+                            {removeCartLoadingId === items.productId._id ? (
+                              <div className="flex items-center justify-center">
+                                <LoadingIcons.TailSpin
+                                  stroke="#fff"
+                                  strokeWidth={4}
+                                  className="w-6 h-6 animate-spin"
+                                />
+                              </div>
+                            ) : (
+                              <>Remove </>
+                            )}
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              handleBuyNowCart(items);
+                            }}
+                            disabled={loadingId === items.productId._id}
+                            className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-sm font-semibold py-1 px-4 rounded hover:from-yellow-600 hover:to-yellow-400 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
+                          >
+                            {loadingId === items.productId._id ? (
+                              <div className="flex items-center justify-center">
+                                <LoadingIcons.TailSpin
+                                  stroke="#fff"
+                                  strokeWidth={4}
+                                  className="w-6 h-6 animate-spin"
+                                />
+                              </div>
+                            ) : (
+                              <>Buy Now</>
+                            )}
+
+                            {/* Buy Now
+                        {buttonLoading ? (
+                          <LoadingIcons.BallTriangle
+                            stroke="#fff"
+                            strokeWidth={2}
+                            className="w-6 h-6 animate-spin"
+                          />
+                        ) : (
+                          "Buy Now"
+                        )} */}
+                          </button>
+                        </div>
                       </div>
                     )
                 )}
@@ -673,7 +715,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
           className="fixed top-0 left-0 w-full h-full bg-opacity-50 flex items-center justify-center"
           style={{ backdropFilter: "blur(10px)" }}
         >
-          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
             <h2 className="text-2xl text-gray-600 font-semibold mb-4">
               {selectedProduct.name}
             </h2>
