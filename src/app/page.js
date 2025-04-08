@@ -14,6 +14,8 @@ export default function Home() {
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [loading, setLoading ] = useState(true); // State for loading
+
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {

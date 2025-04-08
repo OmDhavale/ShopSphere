@@ -153,6 +153,7 @@ const paymentMethods = [
                 <p className="px-4 text-gray-600 mb-2">
                   Category: {product.category}
                 </p>
+                <br/>
                 <div className="px-4 text-gray-600 mb-2">Description:</div>
                 <div className="px-4 text-gray-600 mb-2 text-sm  italic">
                   {product.description}
