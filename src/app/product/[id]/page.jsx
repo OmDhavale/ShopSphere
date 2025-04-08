@@ -24,6 +24,31 @@ export default function ProductDetails({ params }) {
   const [paymentOption, setPaymentOption] = useState("Credit Card (Static)"); // Static payment option
   const paymentOptions = ["Credit Card", "UPI", "Net Banking"]; // Available options
   const [phoneNumber, setPhoneNumber] = useState(""); 
+const [rating, setRating] = useState(0);
+const [deliverTomorrow, setDeliverTomorrow] = useState(false);
+const [deliverByTwoDays, setDeliverByTwoDays] = useState(false);
+ const starColor = "orange"; // You can change this to your desired color
+
+ const handleStarClick = (selectedRating) => {
+   setRating(selectedRating);
+ };
+
+
+const handleDeliverTomorrowChange = (event) => {
+  setDeliverTomorrow(event.target.checked);
+  // Uncheck the other option if this one is checked
+  if (event.target.checked) {
+    setDeliverByTwoDays(false);
+  }
+};
+
+const handleDeliverByTwoDaysChange = (event) => {
+  setDeliverByTwoDays(event.target.checked);
+  // Uncheck the other option if this one is checked
+  if (event.target.checked) {
+    setDeliverTomorrow(false);
+  }
+};
 
 //   const paymentMethods = [
 //   { name: 'Credit Card', logo: creditCardLogo },
@@ -150,13 +175,106 @@ const paymentMethods = [
               />
 
               <div className="px-4 text-gray-600 mb-2 flex flex-col">
-                <p className="px-4 text-gray-600 mb-2">
+                <h3 className="text-l font-semibold mb-2 text-gray-600 mb-2">
                   Category: {product.category}
-                </p>
-                <br/>
-                <div className="px-4 text-gray-600 mb-2">Description:</div>
-                <div className="px-4 text-gray-600 mb-2 text-sm  italic">
+                </h3>
+
+                <div className=" text-gray-600 mb-2 text-sm  italic">
+                  <span className="text-gray-600 mb-2">Description: </span>{" "}
                   {product.description}
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Customer Review</h3>
+
+                {/* Rating Input */}
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Rating:
+                  </label>
+                  <div className="flex items-center">
+{[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              type="button"
+              onClick={() => handleStarClick(star)}
+              className={`focus:outline-none`}
+            >
+              <svg
+                className="w-6 h-6"
+                viewBox="0 0 24 24"
+                fill={star <= rating ? starColor : 'none'}
+                stroke={star <= rating ? starColor : 'currentColor'}
+                strokeWidth={2}
+              >
+                <path
+                  d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                />
+              </svg>
+            </button>
+          ))}
+                    <span className="text-gray-600 ml-2">{rating} stars</span>
+                  </div>
+                </div>
+
+                {/* Delivery Options Checkboxes */}
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Delivery Options:
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="deliverTomorrow"
+                        className="form-checkbox h-5 w-5 text-indigo-600"
+                        checked={deliverTomorrow}
+                        onChange={handleDeliverTomorrowChange}
+                      />
+                      <label
+                        htmlFor="deliverTomorrow"
+                        className="ml-2 text-gray-700 text-sm"
+                      >
+                        Deliver Tomorrow
+                      </label>
+                    </div>
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="deliverByTwoDays"
+                        className="form-checkbox h-5 w-5 text-indigo-600"
+                        checked={deliverByTwoDays}
+                        onChange={handleDeliverByTwoDaysChange}
+                      />
+                      <label
+                        htmlFor="deliverByTwoDays"
+                        className="ml-2 text-gray-700 text-sm"
+                      >
+                        Deliver By 2 Days
+                      </label>
+                    </div>
+                  </div>
+                  {deliverTomorrow && deliverByTwoDays && (
+                    <p className="text-red-500 text-xs mt-1">
+                      Please select only one delivery option.
+                    </p>
+                  )}
+                </div>
+
+                {/* You can add more review input fields here (e.g., text area for comments) */}
+                {/* Example of displaying the selected options */}
+                <div className="mt-4">
+                  <p className="text-gray-600 text-sm">
+                    Selected Rating: {rating} stars
+                  </p>
+                  {deliverTomorrow && (
+                    <p className="text-gray-600 text-sm">
+                      Delivery Preference: Deliver Tomorrow
+                    </p>
+                  )}
+                  {deliverByTwoDays && (
+                    <p className="text-gray-600 text-sm">
+                      Delivery Preference: Deliver By 2 Days
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

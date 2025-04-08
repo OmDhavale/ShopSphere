@@ -294,9 +294,12 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
             <div className="flex flex-row space-x-4">
               <button
                 onClick={fetchCart}
-                className="w-full bg-gradient-to-r from-indigo-500 to-indigo-700 text-white font-semibold py-2 px-4 rounded-xl hover:from-indigo-700 hover:to-indigo-500 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
+                className="w-full bg-gradient-to-r  text-white font-semibold py-2 px-4 rounded-xl  cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
+                style={{
+                backgroundColor: "rgba(0, 0, 0, 0.23)",
+              }}
               >
-                🛒Cart
+                🛒My Cart
               </button>
               {adminLogin === "admin" ? (
                 <>
