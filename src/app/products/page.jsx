@@ -40,7 +40,12 @@ export default function ProductsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [showCart, setShowCart] = useState("false");
-   const localCredentials = localStorage.getItem("localCredentials");
+
+  if (typeof window !== "undefined") {
+    // Safely access localStorage here
+    const localCredentials = localStorage.getItem("localCredentials");
+  }
+   
   //convert localCredentials to JSON object
   const parsedCredentials = JSON.parse(localCredentials);
       const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
