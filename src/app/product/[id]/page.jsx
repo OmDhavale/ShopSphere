@@ -61,30 +61,30 @@ const paymentMethods = [
   { name: "Net Banking" },
   { name: "Google Pay" },
 ];
-  useEffect(() => {
-    if (!productId) return;
+  // useEffect(() => {
+  //   if (!productId) return;
 
-    const fetchProduct = async () => {
-      try {
-        const response = await axios.post(
-          "/api/getItems/buy",
-          { productId },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log("Product fetched successfully:", response.data.item);
-        setProduct(response.data.item);
-      } catch (error) {
-        console.error("Error fetching product", error);
-      }
-    };
+  //   const fetchProduct = async () => {
+  //     try {
+  //       const response = await axios.post(
+  //         "/api/getItems/buy",
+  //         { product },
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //       console.log("Product fetched successfully:", response.data.item);
+  //       //setProduct(response.data.item);
+  //     } catch (error) {
+  //       console.error("Error fetching product", error);
+  //     }
+  //   };
 
-    fetchProduct();
-  }, [productId]);
-
+  //   fetchProduct();
+  // }, [productId]);
+  
   useEffect(() => {
     const fetchCart = async () => {
       try {
@@ -110,6 +110,7 @@ const paymentMethods = [
                   `Quantity of product with ID ${productId} in cart:`,
                   cartItem.quantity
                 );
+                setProduct(cartItem.productId);
                 setCartQuantity(cartItem.quantity);
               } else {
                 console.log(`Product with ID ${productId} not found in cart.`);
@@ -133,6 +134,42 @@ const paymentMethods = [
     };
     fetchCart();
   }, [productId]);
+
+  const buyProduct = async () => {
+    const data = {
+      cartQuantity,
+      address,
+      phoneNumber,
+      paymentOption,
+      totalAmount: cartQuantity * product?.price,
+    };
+    console.log("To buy: ",{product},{data});
+    try {
+      axios
+        .post(
+          "/api/getItems/buy",
+          {
+            product,data
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          console.log(
+            "Product bought successfully:",
+            response.data.item,
+            response.data.data
+          );
+          
+          toast.success("Placed Order for " + product.name + " successfully at " + response.data.data.address + " !");
+        });
+    } catch (err) {
+      console.log("Error buying", err);
+    }
+  };
   if (!productId) {
     return <div>Loading...</div>; // ✅ Prevent accessing undefined productId
   }
@@ -142,19 +179,19 @@ const paymentMethods = [
     console.log(`Selected payment: ${methodName}`);
   };
 
-  const handlePlaceOrder = (name) => {
-    console.log("Order Details:", {
-      productId: product?._id,
-      quantity: cartQuantity,
-      address: address,
-      phoneNumber: phoneNumber,
-      paymentOption: paymentOption,
-      totalAmount: cartQuantity * product?.price,
-      userEmail: parsedCredentials?.email,
-    });
-    // Here you would typically send this order data to your backend API
-    toast.success(`Order placed for ${name} at ${address?address:"nowhere"} !`);
-  };
+  // const handlePlaceOrder = (name) => {
+  //   console.log("Order Details:", {
+  //     productId: product?._id,
+  //     quantity: cartQuantity,
+  //     address: address,
+  //     phoneNumber: phoneNumber,
+  //     paymentOption: paymentOption,
+  //     totalAmount: cartQuantity * product?.price,
+  //     userEmail: parsedCredentials?.email,
+  //   });
+  //   // Here you would typically send this order data to your backend API
+  //   toast.success(`Order placed for ${name} at ${address?address:"nowhere"} !`);
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-8">
@@ -171,7 +208,7 @@ const paymentMethods = [
                 alt={product.name}
                 width={300}
                 height={300}
-                className="w-10% h-10% object-cover rounded-2xl shadow-neutral-800"
+                className="w-10% h-10% object-cover rounded-2xl shadow-neutral-900 p-2"
               />
 
               <div className="px-4 text-gray-600 mb-2 flex flex-col">
@@ -355,7 +392,8 @@ const paymentMethods = [
 
             <button
               onClick={() => {
-                handlePlaceOrder(product.name);
+                // handlePlaceOrder(product.name);
+                buyProduct();
               }}
               className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
             >
