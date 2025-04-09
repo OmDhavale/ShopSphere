@@ -19,16 +19,7 @@ export default function ProductsPage() {
   const userMenuRef = useRef(null);
   const router = useRouter(); // Initialize useRouter
   const [productToBuy, setProductToBuy] = useState({});
-  // Static product data (replace with database fetch later)
-  // const products = [
-  //   { id: 1, name: 'Modern Desk Lamp', category: 'lighting', price: 49.99, imageUrl: '/product1.jpg' },
-  //   { id: 2, name: 'Comfortable Wireless Headphones', category: 'electronics', price: 129.99, imageUrl: '/product2.jpg' },
-  //   { id: 3, name: 'Minimalist Backpack', category: 'accessories', price: 79.99, imageUrl: '/product3.jpg' },
-  //   { id: 4, name: 'Stylish Coffee Maker', category: 'appliances', price: 89.99, imageUrl: '/product1.jpg' },
-  //   { id: 5, name: 'Ergonomic Office Chair', category: 'furniture', price: 249.99, imageUrl: '/product2.jpg' },
-  //   { id: 6, name: 'Smart Watch', category: 'electronics', price: 199.99, imageUrl: '/product3.jpg' },
-  //   // Add more products as needed
-  // ];
+  const [user, setUser] = useState({});
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categories,setCategories] = useState(null);
    //Fetching product data
@@ -41,30 +32,63 @@ export default function ProductsPage() {
   const [cartItems, setCartItems] = useState([]);
   const [showCart, setShowCart] = useState("false");
 
-  if (typeof window !== "undefined") {
-    // Safely access localStorage here
-    const localCredentials = localStorage.getItem("localCredentials");
-  }
-   
-  //convert localCredentials to JSON object
-  const parsedCredentials = JSON.parse(localCredentials);
+  
+  //  const localCredentials = localStorage.getItem("localCredentials");
+  // //convert localCredentials to JSON object
+  // const parsedCredentials = JSON.parse(localCredentials);
       const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
       const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
       
-// console.log("adminCredentials: ",adminEmail, adminUsername)
-// console.log("localCredentials: ",parsedCredentials.email, parsedCredentials.username)
+// console.log("adminCredentials: ",adminEmail, adminUsername) //comment
+// console.log("localCredentials: ",parsedCredentials.email, parsedCredentials.username) //comment
  
   // Static user data (replace with actual user data later)
-  const user = {
-    username: parsedCredentials.username,
-    email: parsedCredentials.email,
-  };
+  //comment out this
+  // const user = {
+  //   username: parsedCredentials.username,
+  //   email: parsedCredentials.email,
+  // };
+// useEffect(() => {
+//   // Access localStorage only in the browser
+//   const localCredentials = localStorage.getItem("localCredentials");
+//   if (localCredentials) {
+//     const parsedCredentials = JSON.parse(localCredentials);
+//     const user = {
+//       username: parsedCredentials.username,
+//       email: parsedCredentials.email,
+//     };
+//     setUser(user);
+//   }
+// }, []);
+useEffect(() => {
+  const localCredentials = localStorage.getItem("localCredentials");
+  if (localCredentials) {
+    try {
+      const parsedCredentials = JSON.parse(localCredentials);
+
+      // Safety check in case parsed result is invalid
+      if (parsedCredentials?.username && parsedCredentials?.email) {
+        const user = {
+          username: parsedCredentials.username,
+          email: parsedCredentials.email,
+        };
+        setUser(user);
+      } else {
+        console.warn("Parsed credentials are missing username or email");
+      }
+    } catch (err) {
+      console.error("Failed to parse localCredentials:", err);
+    }
+  } else {
+    console.warn("No localCredentials found in localStorage");
+  }
+}, []);
 
     useEffect(() => {
 
       const fetchProducts = async () => {
 
-          if(parsedCredentials.email === adminEmail && parsedCredentials.username === adminUsername){
+          if(user.email === adminEmail && user.username === adminUsername){
               console.log("Admin logged in successfully");
               setAdminLogin("admin")
             }
@@ -196,7 +220,7 @@ const handleBuyNowCart = (items) =>{
  const addToCart = (product) => {
    console.log("Product to be added: ", product);
    const cartItem = {
-     email: parsedCredentials.email, // or userId if you store it
+     email: user.email, // or userId if you store it
      productId: product._id,
      quantity: 1, // default quantity
    };
@@ -223,20 +247,23 @@ const handleBuyNowCart = (items) =>{
 
  const fetchCart = async () => {
   try {
-    axios.post("/api/getMyCart", {
-      email: parsedCredentials.email,
-    }).then((res)=>{
-      
-    console.log("Cart items:", res.data.cart.items);
+    axios
+      .post("/api/getMyCart", {
+        // email: parsedCredentials.email,
+        email: user.email,
+      })
+      .then((res) => {
+        console.log("Cart items:", res.data.cart.items);
 
-    setCartItems(res.data.cart.items);
-    setShowCart("true");
-    console.log(showCart);
-    console.log(cartItems.length);
-    // toast.success("Cart loaded successfully!");
-    }).catch((err)=>{
-      toast.error("Failed to load cart",err);
-    });
+        setCartItems(res.data.cart.items);
+        setShowCart("true");
+        console.log(showCart);
+        console.log(cartItems.length);
+        // toast.success("Cart loaded successfully!");
+      })
+      .catch((err) => {
+        toast.error("Failed to load cart", err);
+      });
 
   } catch (err) {
     toast.error("Failed to load cart");
@@ -245,7 +272,8 @@ const handleBuyNowCart = (items) =>{
 const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
   const handleRemoveFromCart = (productId) => {
     const prodId = productId._id;
-    const email = parsedCredentials.email;
+    // const email = parsedCredentials.email;
+    const email = user.email;
     console.log("Removing product from cart:", prodId, email);
     const reqBody = { email, productId: prodId };
     setRemoveCartLoadingId(productId._id);
@@ -270,7 +298,8 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
   const updateCartQuantity = async (productId, newQuantity) => {
     try {
       axios.put("/api/updateCartQuantity", {
-        email: parsedCredentials.email,
+        // email: parsedCredentials.email,
+        email: user.email,
         productId: productId,
         quantity: newQuantity,
       }).then((response)=>{
@@ -292,7 +321,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
       <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <a href="/" className="text-2xl font-semibold text-white">
-            Hello {parsedCredentials.username} !
+            Hello {user.username} !
           </a>
 
           <div className="flex items-center space-x-4">
@@ -301,8 +330,8 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                 onClick={fetchCart}
                 className="w-full bg-gradient-to-r  text-white font-semibold py-2 px-4 rounded-xl  cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
                 style={{
-                backgroundColor: "rgba(0, 0, 0, 0.23)",
-              }}
+                  backgroundColor: "rgba(0, 0, 0, 0.23)",
+                }}
               >
                 🛒My Cart
               </button>
@@ -376,7 +405,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
 
               <div
                 ref={userMenuRef}
-                className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden transition-transform duration-300 ease-in-out ${
+                className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 transition-transform duration-300 ease-in-out ${
                   isUserMenuOpen
                     ? "translate-y-0 opacity-100"
                     : "translate-y-4 opacity-0 pointer-events-none"
