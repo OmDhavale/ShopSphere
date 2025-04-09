@@ -28,7 +28,7 @@ const [rating, setRating] = useState(0);
 const [deliverTomorrow, setDeliverTomorrow] = useState(false);
 const [deliverByTwoDays, setDeliverByTwoDays] = useState(false);
  const starColor = "orange"; // You can change this to your desired color
-
+const [isfound, setIsFound] = useState(true);
  const handleStarClick = (selectedRating) => {
    setRating(selectedRating);
  };
@@ -115,6 +115,7 @@ const paymentMethods = [
               } else {
                 console.log(`Product with ID ${productId} not found in cart.`);
                 setCartQuantity(1); // Set quantity to 0 if not in cart
+                setIsFound(false);
               }
               // toast.success("Cart loaded successfully!");
             } else {
@@ -401,7 +402,7 @@ const paymentMethods = [
             </button>
           </>
         ) : (
-          <p>Loading product details...</p>
+          <p>{!isfound?<>Item not found in cart ! Please add it first in cart </>:<>Loading your product...</>}</p>
         )}
       </div>
     </div>
