@@ -212,7 +212,7 @@ const paymentMethods = [
               />
 
               <div className="px-4 text-gray-600 mb-2 flex flex-col">
-                <h3 className="text-l font-semibold mb-2 text-gray-600 mb-2">
+                <h3 className="text-l font-semibold mb-2 text-gray-600 ">
                   Category: {product.category}
                 </h3>
 
