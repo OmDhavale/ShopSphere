@@ -65,29 +65,32 @@ useEffect(() => {
   if (localCredentials) {
     try {
       const parsedCredentials = JSON.parse(localCredentials);
-
+      console.log("parsed: ",parsedCredentials.username, parsedCredentials.email)
       // Safety check in case parsed result is invalid
       if (parsedCredentials?.username && parsedCredentials?.email) {
-        const user = {
-          username: parsedCredentials.username,
+        // const user = {
+        //   email: parsedCredentials.email,
+        //   username: parsedCredentials.username,  
+        // };
+        setUser({
           email: parsedCredentials.email,
-        };
-        setUser(user);
+          username: parsedCredentials.username,
+        }); 
       } else {
-        console.warn("Parsed credentials are missing username or email");
+        console.log("Parsed credentials are missing username or email");
       }
     } catch (err) {
-      console.error("Failed to parse localCredentials:", err);
+      console.log("Failed to parse localCredentials:", err);
     }
   } else {
-    console.warn("No localCredentials found in localStorage");
+    console.log("No localCredentials found in localStorage");
   }
 }, []);
 
     useEffect(() => {
 
       const fetchProducts = async () => {
-
+          //console.log(user.email, user.username, adminEmail, adminUsername)
           if(user.email === adminEmail && user.username === adminUsername){
               console.log("Admin logged in successfully");
               setAdminLogin("admin")
@@ -109,7 +112,7 @@ useEffect(() => {
         }
       };
       fetchProducts();
-    }, []);
+    }, [user]);
 
   const filteredProducts = products.filter((product) => {
     const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
