@@ -48,6 +48,7 @@ export default function AccountPage() {
         .catch((error) => {
           console.error("Login error:", error);
           toast.error("Login failed");
+           setLoginLoading(false);
         });
 
       console.log("Login:", { email, password });
@@ -73,6 +74,7 @@ export default function AccountPage() {
         .catch((error) => {
           console.error("Signup error:", error);
           toast.error("Signup failed");
+          setSignupLoading(false);
         });
       console.log("Signup:", { email, password });
     }

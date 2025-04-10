@@ -302,9 +302,9 @@ const paymentMethods = [
                 {/* You can add more review input fields here (e.g., text area for comments) */}
                 {/* Example of displaying the selected options */}
                 <div className="mt-4">
-                  <p className="text-gray-600 text-sm">
+                  {/* <p className="text-gray-600 text-sm">
                     Selected Rating: {rating} stars
-                  </p>
+                  </p> */}
                   {deliverTomorrow && (
                     <p className="text-gray-600 text-sm">
                       Delivery Preference: Deliver Tomorrow
