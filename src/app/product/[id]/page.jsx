@@ -203,7 +203,7 @@ const paymentMethods = [
             <h2 className="text-3xl font-semibold text-gray-600 mb-4">
               {product.name}
             </h2>
-            <div className="flex justify-center items-center mb-4">
+            <div className="flex  flex-col md:flex-row justify-center items-center mb-4">
               <img
                 src={product.image}
                 alt={product.name}
@@ -229,26 +229,24 @@ const paymentMethods = [
                     Rating:
                   </label>
                   <div className="flex items-center">
-{[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              onClick={() => handleStarClick(star)}
-              className={`focus:outline-none`}
-            >
-              <svg
-                className="w-6 h-6"
-                viewBox="0 0 24 24"
-                fill={star <= rating ? starColor : 'none'}
-                stroke={star <= rating ? starColor : 'currentColor'}
-                strokeWidth={2}
-              >
-                <path
-                  d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-                />
-              </svg>
-            </button>
-          ))}
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => handleStarClick(star)}
+                        className={`focus:outline-none`}
+                      >
+                        <svg
+                          className="w-6 h-6"
+                          viewBox="0 0 24 24"
+                          fill={star <= rating ? starColor : "none"}
+                          stroke={star <= rating ? starColor : "currentColor"}
+                          strokeWidth={2}
+                        >
+                          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                      </button>
+                    ))}
                     <span className="text-gray-600 ml-2">{rating} stars</span>
                   </div>
                 </div>
@@ -402,7 +400,13 @@ const paymentMethods = [
             </button>
           </>
         ) : (
-          <p>{!isfound?<>Item not found in cart ! Please add it first in cart </>:<>Loading your product...</>}</p>
+          <p>
+            {!isfound ? (
+              <>Item not found in cart ! Please add it first in cart </>
+            ) : (
+              <>Loading your product...</>
+            )}
+          </p>
         )}
       </div>
     </div>

@@ -5,17 +5,22 @@ import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { toast, ToastContainer } from "react-toastify";
 import axios from 'axios';
+import LoadingIcons from "react-loading-icons";
+
 export default function AccountPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [loginLoading,setLoginLoading] = useState(false);
+  const [signupLoading,setSignupLoading] = useState(false);
   const router = useRouter();
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isLogin) {
       // Handle login logic here
       const reqBody = { email,password }
+      setLoginLoading(true);
       axios
         .post("/api/login",reqBody,{
           headers: {
@@ -25,6 +30,7 @@ export default function AccountPage() {
         .then((response) => {
           console.log("Login successful:", response.data);
           toast.success("Login successful!");
+          setLoginLoading(false);
           //code for setting up the name into local storage
           const storedData = {
             username: response.data.username,
@@ -41,7 +47,7 @@ export default function AccountPage() {
         })
         .catch((error) => {
           console.error("Login error:", error);
-          toast.error(error.data.message || "Login failed");
+          toast.error("Login failed");
         });
 
       console.log("Login:", { email, password });
@@ -49,6 +55,7 @@ export default function AccountPage() {
       // Handle signup logic here
       
       const reqBody = { username,email,password }
+      setSignupLoading(true);
       axios
         .post("/api/signup", reqBody,{
           headers: {
@@ -58,13 +65,14 @@ export default function AccountPage() {
         .then((response) => {
           console.log("Signup successful:", response.data);
           toast.success("Signup successful!");
+          setSignupLoading(false);
           setUsername("");
           setEmail("");
           setPassword("");
         })
         .catch((error) => {
           console.error("Signup error:", error);
-          toast.error(error.data.message || "Signup failed");
+          toast.error("Signup failed");
         });
       console.log("Signup:", { email, password });
     }
@@ -122,14 +130,67 @@ export default function AccountPage() {
                   type="submit"
                   className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" //w-full added.
                 >
-                  {isLogin ? "Login" : "Sign Up"}
+                  {isLogin ? (
+                    <>
+                      {!loginLoading ? (
+                        "Login"
+                      ) : (
+                        <>
+                          <LoadingIcons.ThreeDots
+                            stroke="#fff"
+                            width="20"
+                            height="20"
+                          />
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {!signupLoading ? (
+                        "Sign Up"
+                      ) : (
+                        <LoadingIcons.ThreeDots
+                          stroke="#fff"
+                          width="20"
+                          height="20"
+                        />
+                      )}
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsLogin(!isLogin)}
                   className="inline-block align-baseline font-bold text-sm text-pink-500 hover:text-pink-800"
                 >
-                  {isLogin ? "Sign Up" : "Login"}
+                  
+                  {isLogin ? (
+                    <>
+                      {!signupLoading ? (
+                        "Sign Up"
+                      ) : (
+                        <LoadingIcons.ThreeDots
+                          stroke="#fff"
+                          width="20"
+                          height="20"
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {!loginLoading ? (
+                        "Login"
+                      ) : (
+                        <>
+                          <LoadingIcons.ThreeDots
+                            stroke="#fff"
+                            width="20"
+                            height="20"
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
                 </button>
               </div>
             </form>

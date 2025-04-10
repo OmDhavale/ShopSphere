@@ -31,7 +31,12 @@ export default function ProductsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [showCart, setShowCart] = useState("false");
+const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+ const sidebarRef = useRef(null);
+ const toggleMenu = () => {
+   setIsMenuOpen(!isMenuOpen);
+ };
   
   //  const localCredentials = localStorage.getItem("localCredentials");
   // //convert localCredentials to JSON object
@@ -319,9 +324,43 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
     }
   };
 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
-      <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500">
+      {/* Responsiveness for mobile screens */}
+      <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500 md:hidden">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <a href="/" className="text-2xl font-semibold text-white">
+            Hello {user.username} !
+          </a>
+          <button
+            onClick={toggleMenu}
+            className="text-gray-600 hover:text-gray-900 focus:outline-none"
+          >
+            <svg
+              className="h-6 w-6 fill-current text-white"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {isMenuOpen ? (
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.829-4.828 4.829a1 1 0 0 1-1.414-1.414l4.829-4.828-4.829-4.828a1 1 0 1 1 1.414-1.414l4.828 4.829 4.829-4.829a1 1 0 1 1 1.414 1.414l-4.828 4.828 4.828 4.828z"
+                />
+              ) : (
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500 hidden md:block">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <a href="/" className="text-2xl font-semibold text-white">
             Hello {user.username} !
@@ -431,6 +470,160 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
           </div>
         </div>
       </header>
+      {/* navbar for Mobile screens */}
+      <div
+        ref={sidebarRef}
+        className={`fixed top-0 right-0 h-full w-64  shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        } md:hidden`}
+        style={{ backdropFilter: "blur(44px)" }}
+      >
+        <div className="p-4 flex flex-col space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={toggleMenu}
+              className="text-gray-600 hover:text-gray-900 focus:outline-none"
+            >
+              <svg
+                className="h-6 w-6 fill-current text-black"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {isMenuOpen ? (
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.829-4.828 4.829a1 1 0 0 1-1.414-1.414l4.829-4.828-4.829-4.828a1 1 0 1 1 1.414-1.414l4.828 4.829 4.829-4.829a1 1 0 1 1 1.414 1.414l-4.828 4.828 4.828 4.828z"
+                  />
+                ) : (
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
+          {/* <a href="/" className="text-2xl font-semibold text-gray-800">
+            Hello {user.username} !
+          </a> */}
+          <div
+            className="flex flex-row items-center space-x-4 rounded-xl py-2 px-3 focus:outline-none"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <svg
+              className="h-8 w-8 rounded-full bg-gray-500 fill-white"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-3.31 0-6 2.69-6 6v2h12v-2c0-3.31-2.69-6-6-6z" />
+            </svg>
+            <div className="flex flex-col">
+              <span className="ml-2 text-gray-800">{user.username}</span>
+              <span className="ml-2 text-gray-800">{user.email}</span>
+            </div>
+            <button onClick={handleLogout}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="h-5 w-5 mr-2" // Optional: Adjust size and margin
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <button
+            onClick={async () => {
+              await fetchCart();
+              setIsMenuOpen(false);
+            }}
+            className="w-full bg-gradient-to-r text-white font-semibold py-2 px-4 rounded-xl cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all duration-500 ease-in-out"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.23)",
+            }}
+          >
+            🛒My Cart
+          </button>
+          {adminLogin === "admin" ? (
+            <button
+              onClick={handleCreate}
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:from-blue-700 hover:to-blue-500 cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all duration-500 ease-in-out"
+            >
+              + Product
+            </button>
+          ) : (
+            <></>
+          )}
+          <input
+            type="text"
+            placeholder="Search items..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="rounded-xl py-2 px-3 focus:outline-none text-gray-800"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
+          />
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="rounded-xl py-2 px-3 focus:outline-none text-gray-800 appearance-none"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <option
+              value="all"
+              className="p-2 block hover:bg-purple-700/50 text-black"
+            >
+              All
+            </option>
+            {categories &&
+              [
+                ...new Map(
+                  categories.map((cat) => [cat.toLowerCase(), cat])
+                ).values(),
+              ].map((category, index) => (
+                <option
+                  key={index}
+                  value={category}
+                  className="p-2 block hover:bg-purple-700/50 text-black"
+                >
+                  {category}
+                </option>
+              ))}
+          </select>
+          {/* <button
+            onClick={toggleUserMenu}
+            className="focus:outline-none flex items-center"
+          >
+            <svg
+              className="h-8 w-8 rounded-full bg-gray-300 fill-white"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-3.31 0-6 2.69-6 6v2h12v-2c0-3.31-2.69-6-6-6z" />
+            </svg>
+            <span className="ml-2 text-gray-800">{user.username}</span>
+          </button> */}
+
+          {/* <button
+            onClick={handleLogout}
+            className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+          >
+            Logout
+          </button> */}
+        </div>
+      </div>
 
       <main className="py-16 px-4 sm:px-6 lg:px-8 overflow-auto">
         <ToastContainer />

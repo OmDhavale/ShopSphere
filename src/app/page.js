@@ -141,12 +141,36 @@ export default function Home() {
       {/* Added ref to the sidebar div */}
       <div
         ref={sidebarRef} // Add the ref to the sidebar div
-        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0  w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         } md:hidden`}
       >
         <div className="p-4">
           <nav className="flex flex-col space-y-4 ">
+            <button
+              onClick={toggleMenu}
+              className="text-gray-600 hover:text-gray-900 focus:outline-none"
+            >
+              <svg
+                className="h-6 w-6 fill-current"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {isMenuOpen ? (
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.829-4.828 4.829a1 1 0 0 1-1.414-1.414l4.829-4.828-4.829-4.828a1 1 0 1 1 1.414-1.414l4.828 4.829 4.829-4.829a1 1 0 1 1 1.414 1.414l-4.828 4.828 4.828 4.828z"
+                  />
+                ) : (
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"
+                  />
+                )}
+              </svg>
+            </button>
             <a
               onClick={handleShopNowClick}
               className="text-gray-600 hover:text-gray-900 cursor-pointer"
