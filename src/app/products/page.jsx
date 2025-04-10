@@ -651,9 +651,23 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                       Category: {product.category}
                     </p>
                     {/* for discount strike-through */}
-                    <p className="text-red-600 line-through font-semibold">
-                      ₹{(product.price * 1.2).toFixed(2)}
-                    </p>
+                    <div className="flex flex-row gap-2 items-center mt-2">
+                      <p className="text-red-600 line-through font-semibold">
+                        ₹{(product.price * 1.2).toFixed(2)}
+                      </p>
+                      <p
+                        className="bg-red-500 text-white font-bold py-1 px-2 rounded-full text-sm relative z-10"
+                         // Adjust left padding for the icon
+                      >
+                        {Math.ceil(
+                          ((product.price * 1.2 - product.price) /
+                            (product.price * 1.2)) *
+                            100
+                        )}
+                        % off !
+                      </p>
+                    </div>
+
                     {/* for actual price display */}
                     <p className="text-green-700 font-semibold text-xl">
                       ₹{product.price.toFixed(2)}
