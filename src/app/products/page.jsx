@@ -516,10 +516,10 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
             Hello {user.username} !
           </a> */}
           <div
-            className="flex flex-row items-center space-x-4 rounded-xl py-2 px-3 focus:outline-none"
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.1)",
-            }}
+            className="flex flex-row bg-white items-center space-x-4 rounded-xl py-2 px-3 focus:outline-none"
+            // style={{
+            //   backgroundColor: "rgba(0, 0, 0, 0.1)",
+            // }}
           >
             <svg
               className="h-8 w-8 rounded-full bg-gray-500 fill-white"
@@ -555,10 +555,10 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
               await fetchCart();
               setIsMenuOpen(false);
             }}
-            className="w-full bg-gradient-to-r text-white font-semibold py-2 px-4 rounded-xl cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all duration-500 ease-in-out"
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.23)",
-            }}
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-400 text-white font-semibold py-2 px-4 rounded-xl cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all duration-500 ease-in-out"
+            // style={{
+            //   backgroundColor: "rgba(0, 0, 0, 0.23)",
+            // }}
           >
             🛒My Cart
           </button>
@@ -574,61 +574,49 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
           )}
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="rounded-xl py-2 px-3 focus:outline-none text-gray-800"
             style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
           />
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="rounded-xl py-2 px-3 focus:outline-none text-gray-800 appearance-none"
+          <div
+            className="rounded-xl py-2 px-3 focus:outline-none flex flex-row font-sm text-gray-800 items-center"
             style={{
               backgroundColor: "rgba(0, 0, 0, 0.1)",
             }}
           >
-            <option
-              value="all"
-              className="p-2 block hover:bg-purple-700/50 text-black"
+            Filter:
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="px-4 focus:outline-none text-gray-800 appearance-none"
+              // style={{
+              //   backgroundColor: "rgba(0, 0, 0, 0.1)",
+              // }}
             >
-              All
-            </option>
-            {categories &&
-              [
-                ...new Map(
-                  categories.map((cat) => [cat.toLowerCase(), cat])
-                ).values(),
-              ].map((category, index) => (
-                <option
-                  key={index}
-                  value={category}
-                  className="p-2 block hover:bg-purple-700/50 text-black"
-                >
-                  {category}
-                </option>
-              ))}
-          </select>
-          {/* <button
-            onClick={toggleUserMenu}
-            className="focus:outline-none flex items-center"
-          >
-            <svg
-              className="h-8 w-8 rounded-full bg-gray-300 fill-white"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-3.31 0-6 2.69-6 6v2h12v-2c0-3.31-2.69-6-6-6z" />
-            </svg>
-            <span className="ml-2 text-gray-800">{user.username}</span>
-          </button> */}
-
-          {/* <button
-            onClick={handleLogout}
-            className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
-          >
-            Logout
-          </button> */}
+              <option
+                value="all"
+                className="p-2 block hover:bg-purple-700/50 text-black"
+              >
+                All
+              </option>
+              {categories &&
+                [
+                  ...new Map(
+                    categories.map((cat) => [cat.toLowerCase(), cat])
+                  ).values(),
+                ].map((category, index) => (
+                  <option
+                    key={index}
+                    value={category}
+                    className="p-2 block hover:bg-purple-700/50 text-black"
+                  >
+                    {category}
+                  </option>
+                ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -690,7 +678,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                             key={star}
                             type="button"
                             onClick={(e) => {
-                              handleStarClick(star)
+                              handleStarClick(star);
                               e.stopPropagation();
                             }}
                             className={`focus:outline-none`}
@@ -874,7 +862,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
             {cartItems == null ? (
               <p className="text-center text-gray-600">Your cart is empty.</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-auto max-h-96">
                 {cartItems.map(
                   (items, index) =>
                     items.productId && (
@@ -965,7 +953,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                                 />
                               </div>
                             ) : (
-                              <>Buy Now</>
+                              <>Buy !</>
                             )}
 
                             {/* Buy Now
