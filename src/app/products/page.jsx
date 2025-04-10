@@ -1006,7 +1006,17 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                     }}
                     className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
                   >
-                    Delete Item
+                    {deleteLoadingId === selectedProduct._id ? (
+                      <div className="flex items-center justify-center">
+                        <LoadingIcons.TailSpin
+                          stroke="#fff"
+                          strokeWidth={4}
+                          className="w-6 h-6 animate-spin"
+                        />
+                      </div>
+                    ) : (
+                      "Delete Item"
+                    )}
                   </button>
                 </div>
               ) : (
@@ -1016,7 +1026,17 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                 onClick={() => addToCart(selectedProduct)}
                 className="w-full sm:w-1/2 mb-2 sm:mb-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
               >
-                Add to Cart
+                {addcartLoadingId === selectedProduct._id ? (
+                  <div className="flex items-center justify-center">
+                    <LoadingIcons.TailSpin
+                      stroke="#fff"
+                      strokeWidth={4}
+                      className="w-6 h-6 animate-spin"
+                    />
+                  </div>
+                ) : (
+                  "Add to Cart"
+                )}
               </button>
 
               <button
@@ -1027,7 +1047,17 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                 }}
                 className={`w-full sm:w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300`}
               >
-                Buy Now
+                {loadingId === selectedProduct._id ? (
+                  <div className="flex items-center justify-center">
+                    <LoadingIcons.TailSpin
+                      stroke="#fff"
+                      strokeWidth={4}
+                      className="w-6 h-6 animate-spin"
+                    />
+                  </div>
+                ) : (
+                  <>Buy Now</>
+                )}
               </button>
             </div>
           </div>
