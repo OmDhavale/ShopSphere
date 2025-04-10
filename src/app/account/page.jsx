@@ -136,11 +136,13 @@ export default function AccountPage() {
                         "Login"
                       ) : (
                         <>
-                          <LoadingIcons.ThreeDots
-                            stroke="#fff"
-                            width="20"
-                            height="20"
-                          />
+                          <div className="flex justify-center items-center">
+                            <LoadingIcons.ThreeDots
+                              stroke="#fff"
+                              width="20"
+                              height="20"
+                            />
+                          </div>
                         </>
                       )}
                     </>
@@ -149,11 +151,13 @@ export default function AccountPage() {
                       {!signupLoading ? (
                         "Sign Up"
                       ) : (
-                        <LoadingIcons.ThreeDots
-                          stroke="#fff"
-                          width="20"
-                          height="20"
-                        />
+                        <div className="flex justify-center items-center">
+                          <LoadingIcons.ThreeDots
+                            stroke="#fff"
+                            width="20"
+                            height="20"
+                          />
+                        </div>
                       )}
                     </>
                   )}
@@ -163,17 +167,18 @@ export default function AccountPage() {
                   onClick={() => setIsLogin(!isLogin)}
                   className="inline-block align-baseline font-bold text-sm text-pink-500 hover:text-pink-800"
                 >
-                  
                   {isLogin ? (
                     <>
                       {!signupLoading ? (
                         "Sign Up"
                       ) : (
-                        <LoadingIcons.ThreeDots
-                          stroke="#fff"
-                          width="20"
-                          height="20"
-                        />
+                        <div className="flex justify-center items-center">
+                          <LoadingIcons.ThreeDots
+                            stroke="#fff"
+                            width="20"
+                            height="20"
+                          />
+                        </div>
                       )}
                     </>
                   ) : (
@@ -182,11 +187,13 @@ export default function AccountPage() {
                         "Login"
                       ) : (
                         <>
-                          <LoadingIcons.ThreeDots
-                            stroke="#fff"
-                            width="20"
-                            height="20"
-                          />
+                          <div className="flex justify-center items-center">
+                            <LoadingIcons.ThreeDots
+                              stroke="#fff"
+                              width="20"
+                              height="20"
+                            />
+                          </div>
                         </>
                       )}
                     </>
@@ -254,14 +261,74 @@ export default function AccountPage() {
                   type="submit"
                   className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" //w-full added.
                 >
-                  {isLogin ? "Login" : "Sign Up"}
+                  {isLogin ? (
+                    <>
+                      {!loginLoading ? (
+                        "Login"
+                      ) : (
+                        <>
+                          <div className="flex justify-center items-center">
+                            <LoadingIcons.ThreeDots
+                              stroke="#fff"
+                              width="20"
+                              height="20"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {!signupLoading ? (
+                        "Sign Up"
+                      ) : (
+                        <div className="flex justify-center items-center">
+                          <LoadingIcons.ThreeDots
+                            stroke="#fff"
+                            width="20"
+                            height="20"
+                          />
+                        </div>
+                      )}
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsLogin(!isLogin)}
                   className="inline-block align-baseline font-bold text-sm text-pink-500 hover:text-pink-800"
                 >
-                  {isLogin ? "Sign Up" : "Login"}
+                  {isLogin ? (
+                    <>
+                      {!signupLoading ? (
+                        "Sign Up"
+                      ) : (
+                        <div className="flex justify-center items-center">
+                          <LoadingIcons.ThreeDots
+                            stroke="#fff"
+                            width="20"
+                            height="20"
+                          />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {!loginLoading ? (
+                        "Login"
+                      ) : (
+                        <>
+                          <div className="flex justify-center items-center">
+                            <LoadingIcons.ThreeDots
+                              stroke="#fff"
+                              width="20"
+                              height="20"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
                 </button>
               </div>
             </form>

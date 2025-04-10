@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
+import LoadingIcons from "react-loading-icons";
 
 // import creditCardLogo from '../../../../public/images/payment/credit-card.png';
 // import upiLogo from "../../../../public/images/payment/upi.png";
@@ -29,6 +30,7 @@ const [deliverTomorrow, setDeliverTomorrow] = useState(false);
 const [deliverByTwoDays, setDeliverByTwoDays] = useState(false);
  const starColor = "orange"; // You can change this to your desired color
 const [isfound, setIsFound] = useState(true);
+const [buyLoading, setBuyLoading] = useState(false);
  const handleStarClick = (selectedRating) => {
    setRating(selectedRating);
  };
@@ -146,6 +148,7 @@ const paymentMethods = [
     };
     console.log("To buy: ",{product},{data});
     try {
+      setBuyLoading(true);
       axios
         .post(
           "/api/getItems/buy",
@@ -163,8 +166,9 @@ const paymentMethods = [
             "Product bought successfully:",
             response.data.item,
             response.data.data
+           
           );
-          
+           setBuyLoading(false);
           toast.success("Placed Order for " + product.name + " successfully at " + response.data.data.address + " !");
         });
     } catch (err) {
@@ -396,7 +400,13 @@ const paymentMethods = [
               }}
               className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
             >
-              Place Order
+              {!buyLoading ? (
+                "Place order"
+              ) : (
+                <div className="flex justify-center items-center">
+                  <LoadingIcons.BallTriangle className="text-white h-5 w-5" />
+                </div>
+              )}
             </button>
           </>
         ) : (
