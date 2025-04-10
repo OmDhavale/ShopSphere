@@ -225,10 +225,10 @@ const paymentMethods = [
                   <span className="text-gray-600 mb-2">Description: </span>{" "}
                   {product.description}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Customer Review</h3>
+                {/* <h3 className="text-xl font-semibold mb-2">Customer Review</h3> */}
 
                 {/* Rating Input */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
                     Rating:
                   </label>
@@ -253,7 +253,7 @@ const paymentMethods = [
                     ))}
                     <span className="text-gray-600 ml-2">{rating} stars</span>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Delivery Options Checkboxes */}
                 <div className="mb-4">

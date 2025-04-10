@@ -32,8 +32,15 @@ export default function ProductsPage() {
   const [cartItems, setCartItems] = useState([]);
   const [showCart, setShowCart] = useState("false");
 const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+ const starColor = "orange"; 
+  // Random rating between 0 and 5
+const [rating, setRating] = useState(3);
  const sidebarRef = useRef(null);
+
+ const handleStarClick = (selectedRating) => {
+   setRating(selectedRating);
+ };
+
  const toggleMenu = () => {
    setIsMenuOpen(!isMenuOpen);
  };
@@ -657,7 +664,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                       </p>
                       <p
                         className="bg-red-500 text-white font-bold py-1 px-2 rounded-full text-sm relative z-10"
-                         // Adjust left padding for the icon
+                        // Adjust left padding for the icon
                       >
                         {Math.ceil(
                           ((product.price * 1.2 - product.price) /
@@ -672,6 +679,40 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                     <p className="text-green-700 font-semibold text-xl">
                       ₹{product.price.toFixed(2)}
                     </p>
+                    {/* for ratings */}
+                    <div className="mb-4">
+                      <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Rating:
+                      </label>
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={(e) => {
+                              handleStarClick(star)
+                              e.stopPropagation();
+                            }}
+                            className={`focus:outline-none`}
+                          >
+                            <svg
+                              className="w-6 h-6"
+                              viewBox="0 0 24 24"
+                              fill={star <= rating ? starColor : "none"}
+                              stroke={
+                                star <= rating ? starColor : "currentColor"
+                              }
+                              strokeWidth={2}
+                            >
+                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                          </button>
+                        ))}
+                        <span className="text-gray-600 ml-2">
+                          {rating} stars
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   <div className="p-4">
                     {adminLogin === "admin" ? (
