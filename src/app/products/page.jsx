@@ -13,28 +13,27 @@ import LoadingIcons from "react-loading-icons";
 import EditProductForm from '../components/EditProductForm';
 // import BuyComponent from '../product/[id]/BuyComponent'; // Import the BuyComponent
 export default function ProductsPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('all');
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');  //for search filter
+  const [filter, setFilter] = useState('all');  // for category filter  
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);  // for user credentials menu - desktop page
   const userMenuRef = useRef(null);
   const router = useRouter(); // Initialize useRouter
   const [productToBuy, setProductToBuy] = useState({});
-  const [user, setUser] = useState({});
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [categories,setCategories] = useState(null);
+  const [user, setUser] = useState({});   //for storing user credentials from local storage
+  const [selectedProduct, setSelectedProduct] = useState(null); //for showing description of selected product  const [categories,setCategories] = useState(null);
    //Fetching product data
-  const [ loading, setLoading] = useState(true)
-  const [buttonLoading, setButtonLoading] = useState(false)
-  const [products, setProducts] = useState([]);
-  const [adminLogin, setAdminLogin ] = useState("user")
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
-  const [showCart, setShowCart] = useState("false");
-const [isMenuOpen, setIsMenuOpen] = useState(false);
- const starColor = "orange"; 
+  const [ loading, setLoading] = useState(true) //loading state of products skeleton
+  const [buttonLoading, setButtonLoading] = useState(false) 
+  const [products, setProducts] = useState([]); // for storing fetched products
+  const [adminLogin, setAdminLogin ] = useState("user") // for admin login status
+  const [editingProduct, setEditingProduct] = useState(null); //for editing page --only for admin
+  const [isEditing, setIsEditing] = useState(false);  //for editing page --only for admin
+  const [cartItems, setCartItems] = useState([]); //for cart items
+  const [showCart, setShowCart] = useState("false"); //for cart visibility
+const [isMenuOpen, setIsMenuOpen] = useState(false); //for mobile side menu visibility
+ const starColor = "orange"; //star of ratings
   // Random rating between 0 and 5
-const [rating, setRating] = useState(3);
+const [rating, setRating] = useState(3); //gave 3 stars initially to all products
  const sidebarRef = useRef(null);
 
  const handleStarClick = (selectedRating) => {
