@@ -25,6 +25,7 @@ export default function ProductsPage() {
   const [ loading, setLoading] = useState(true) //loading state of products skeleton
   const [buttonLoading, setButtonLoading] = useState(false) 
   const [products, setProducts] = useState([]); // for storing fetched products
+  const [categories, setCategories] = useState([]);
   const [adminLogin, setAdminLogin ] = useState("user") // for admin login status
   const [editingProduct, setEditingProduct] = useState(null); //for editing page --only for admin
   const [isEditing, setIsEditing] = useState(false);  //for editing page --only for admin
