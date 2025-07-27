@@ -21,6 +21,7 @@ export default function ProductDetails({ params }) {
   const productId = resolvedParams.id;
   const [cartQuantity, setCartQuantity] = useState(1);
   const [product, setProduct] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [address, setAddress] = useState("");
   const [paymentOption, setPaymentOption] = useState("Credit Card (Static)"); // Static payment option
   const paymentOptions = ["Credit Card", "UPI", "Net Banking"]; // Available options
