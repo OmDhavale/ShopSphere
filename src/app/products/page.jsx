@@ -11,6 +11,7 @@ import { toast, ToastContainer } from "react-toastify";
 import LoadingIcons from "react-loading-icons";
 
 import EditProductForm from '../components/EditProductForm';
+import ProductCard from '../components/ProductCard';
 // import BuyComponent from '../product/[id]/BuyComponent'; // Import the BuyComponent
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');  //for search filter
@@ -103,9 +104,11 @@ useEffect(() => {
 
       const fetchProducts = async () => {
           //console.log(user.email, user.username, adminEmail, adminUsername)
-          if(user.email === adminEmail && user.username === adminUsername){
+          if(user.email && adminEmail && user.email === adminEmail && user.username === adminUsername){
               console.log("Admin logged in successfully");
               setAdminLogin("admin")
+            } else {
+              setAdminLogin("user")
             }
 
         try {
@@ -333,490 +336,112 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
-      {/* Responsiveness for mobile screens */}
-      <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500 md:hidden">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <a href="/" className="text-2xl font-semibold text-white">
-            Hello {user.username} !
-          </a>
-          <button
-            onClick={toggleMenu}
-            className="text-gray-600 hover:text-gray-900 focus:outline-none"
-          >
-            <svg
-              className="h-6 w-6 fill-current text-white"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {isMenuOpen ? (
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.829-4.828 4.829a1 1 0 0 1-1.414-1.414l4.829-4.828-4.829-4.828a1 1 0 1 1 1.414-1.414l4.828 4.829 4.829-4.829a1 1 0 1 1 1.414 1.414l-4.828 4.828 4.828 4.828z"
-                />
-              ) : (
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"
-                />
-              )}
-            </svg>
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+        <nav className="flex text-sm text-gray-500 space-x-2">
+          <a href="/" className="hover:text-gray-900 transition-colors">Home</a>
+          <span>/</span>
+          <span className="text-gray-900 font-medium">Products</span>
+        </nav>
+      </div>
 
-      <header className="py-8 px-4 sm:px-6 lg:px-8 w-full bg-gradient-to-r from-purple-500 to-pink-500 hidden md:block">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <a href="/" className="text-2xl font-semibold text-white">
-            Hello {user.username} !
-          </a>
-
-          <div className="flex items-center space-x-4">
-            <div className="flex flex-row space-x-4">
-              <button
-                onClick={fetchCart}
-                className="w-full bg-gradient-to-r  text-white font-semibold py-2 px-4 rounded-xl  cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
-                style={{
-                  backgroundColor: "rgba(0, 0, 0, 0.23)",
-                }}
-              >
-                🛒My Cart
-              </button>
-              {adminLogin === "admin" ? (
-                <>
-                  <button
-                    onClick={handleCreate}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl  hover:from-blue-700 hover:to-blue-500 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
-                  >
-                    + Product
-                  </button>
-                </>
-              ) : (
-                <></>
-              )}
+      <main className="pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-8 overflow-auto">
+        <ToastContainer />
+        
+        {/* Left Sidebar for Desktop Filters */}
+        <aside className="w-full md:w-64 flex-shrink-0 hidden md:block">
+          <div className="bg-white p-6 rounded-lg border border-gray-200 sticky top-28">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full rounded-md py-2 px-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 text-gray-800"
+              />
             </div>
 
-            <input
-              type="text"
-              placeholder="Search items..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="rounded-xl py-2 px-3 focus:outline-none text-white "
-              style={{ backgroundColor: "rgba(0, 0, 0, 0.23)" }}
-            />
-
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className=" rounded-xl py-2 px-3 focus:outline-none text-white appearance-none" // Added appearance-none
-              style={{
-                backgroundColor: "rgba(0, 0, 0, 0.23)",
-              }}
-            >
-              {/* <div 
-                className="text-black rounded-md overflow-hidden" // Container with gradient and white text
-                style={{ 
-                  background: 'linear-gradient(to right, #8B5CF6, #EC4899)', // Gradient background
-                }} 
-              >*/}
-              {/* code for showing the categories as options but now fetched data items */}
-              <option value="all" className="p-2 block hover:bg-purple-700/50">
-                All
-              </option>
-              {categories &&
-                [
-                  ...new Map(
-                    categories.map((cat) => [cat.toLowerCase(), cat])
-                  ).values(),
-                ].map((category, index) => (
-                  <option
-                    key={index}
-                    value={category}
-                    className="p-2 block hover:bg-purple-700/50"
-                  >
-                    {category}
-                  </option>
-                ))}
-            </select>
-
-            <div className="relative">
-              <button onClick={toggleUserMenu} className="focus:outline-none">
-                <svg
-                  className="h-8 w-8 rounded-full bg-gray-300 fill-white" // Replace with user logo later
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-3.31 0-6 2.69-6 6v2h12v-2c0-3.31-2.69-6-6-6z" />
-                </svg>
-              </button>
-
-              <div
-                ref={userMenuRef}
-                className={`absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg overflow-hidden z-50 transition-transform duration-300 ease-in-out ${
-                  isUserMenuOpen
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-4 opacity-0 pointer-events-none"
-                }`}
-              >
-                <div className="py-2">
-                  <p className="block px-4 py-2 text-gray-800">
-                    {user.username}
-                  </p>
-                  <p className="block px-4 py-2 text-gray-600">{user.email}</p>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <div className="space-y-2">
+                <label className="flex items-center cursor-pointer">
+                  <input 
+                    type="radio" 
+                    name="category" 
+                    value="all" 
+                    checked={filter === "all"}
+                    onChange={(e) => setFilter(e.target.value)}
+                    className="form-radio h-4 w-4 text-zinc-900 border-gray-300 focus:ring-zinc-900"
+                  />
+                  <span className="ml-2 text-gray-700">All Categories</span>
+                </label>
+                {categories &&
+                  [...new Map(categories.map((cat) => [cat.toLowerCase(), cat])).values()].map((category, index) => (
+                    <label key={index} className="flex items-center cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="category" 
+                        value={category} 
+                        checked={filter === category}
+                        onChange={(e) => setFilter(e.target.value)}
+                        className="form-radio h-4 w-4 text-zinc-900 border-gray-300 focus:ring-zinc-900"
+                      />
+                      <span className="ml-2 text-gray-700 capitalize">{category}</span>
+                    </label>
+                  ))}
               </div>
             </div>
           </div>
-        </div>
-      </header>
-      {/* navbar for Mobile screens */}
-      <div
-        ref={sidebarRef}
-        className={`fixed top-0 right-0 h-full w-64  shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
-          isMenuOpen ? "translate-x-0" : "translate-x-full"
-        } md:hidden`}
-        style={{ backdropFilter: "blur(44px)" }}
-      >
-        <div className="p-4 flex flex-col space-y-4">
-          <div className="flex justify-end">
-            <button
-              onClick={toggleMenu}
-              className="text-gray-600 hover:text-gray-900 focus:outline-none"
-            >
-              <svg
-                className="h-6 w-6 fill-current text-black"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {isMenuOpen ? (
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.829-4.828 4.829a1 1 0 0 1-1.414-1.414l4.829-4.828-4.829-4.828a1 1 0 1 1 1.414-1.414l4.828 4.829 4.829-4.829a1 1 0 1 1 1.414 1.414l-4.828 4.828 4.828 4.828z"
-                  />
-                ) : (
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"
-                  />
-                )}
-              </svg>
-            </button>
-          </div>
-          {/* <a href="/" className="text-2xl font-semibold text-gray-800">
-            Hello {user.username} !
-          </a> */}
-          <div
-            className="flex flex-row bg-white items-center space-x-4 rounded-xl py-2 px-3 focus:outline-none"
-            // style={{
-            //   backgroundColor: "rgba(0, 0, 0, 0.1)",
-            // }}
-          >
-            <svg
-              className="h-8 w-8 rounded-full bg-gray-500 fill-white"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 12c-3.31 0-6 2.69-6 6v2h12v-2c0-3.31-2.69-6-6-6z" />
-            </svg>
-            <div className="flex flex-col">
-              <span className="ml-2 text-gray-800">{user.username}</span>
-              <span className="ml-2 text-gray-800">{user.email}</span>
+        </aside>
+
+        {/* Main Product Area */}
+        <div className="flex-1">
+          {/* Top Control Bar */}
+          <div className="mb-6 flex justify-between items-center bg-white p-4 rounded-lg border border-gray-200">
+            <p className="text-gray-600">Showing {filteredProducts.length} products</p>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Sort by:</span>
+              <select className="rounded-md py-1 px-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 text-gray-800 bg-white text-sm">
+                <option>Featured</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+                <option>Newest Arrivals</option>
+              </select>
             </div>
-            <button onClick={handleLogout}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="h-5 w-5 mr-2" // Optional: Adjust size and margin
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-            </button>
           </div>
 
-          <button
-            onClick={async () => {
-              await fetchCart();
-              setIsMenuOpen(false);
-            }}
-            className="w-full bg-gradient-to-r from-purple-500 to-pink-400 text-white font-semibold py-2 px-4 rounded-xl cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all duration-500 ease-in-out"
-            // style={{
-            //   backgroundColor: "rgba(0, 0, 0, 0.23)",
-            // }}
-          >
-            🛒My Cart
-          </button>
-          {adminLogin === "admin" ? (
-            <button
-              onClick={handleCreate}
-              className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 px-4 rounded-xl hover:from-blue-700 hover:to-blue-500 cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all duration-500 ease-in-out"
-            >
-              + Product
-            </button>
-          ) : (
-            <></>
-          )}
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="rounded-xl py-2 px-3 focus:outline-none text-gray-800"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
-          />
-          <div
-            className="rounded-xl py-2 px-3 focus:outline-none flex flex-row font-sm text-gray-800 items-center"
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            Filter:
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="px-4 focus:outline-none text-gray-800 appearance-none"
-              // style={{
-              //   backgroundColor: "rgba(0, 0, 0, 0.1)",
-              // }}
-            >
-              <option
-                value="all"
-                className="p-2 block hover:bg-purple-700/50 text-black"
-              >
-                All
-              </option>
-              {categories &&
-                [
-                  ...new Map(
-                    categories.map((cat) => [cat.toLowerCase(), cat])
-                  ).values(),
-                ].map((category, index) => (
-                  <option
-                    key={index}
-                    value={category}
-                    className="p-2 block hover:bg-purple-700/50 text-black"
-                  >
-                    {category}
-                  </option>
-                ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <main className="py-16 px-4 sm:px-6 lg:px-8 overflow-auto">
-        <ToastContainer />
         {!loading ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
-              {filteredProducts.map((product, _id) => (
-                <div
-                  key={product._id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
-                  onClick={() => handleProductClick(product)}
-                >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    width={500}
-                    height={300}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                      {product.name}
-                    </h2>
-                    <p className="text-gray-600">
-                      Category: {product.category}
-                    </p>
-                    {/* for discount strike-through */}
-                    <div className="flex flex-row gap-2 items-center mt-2">
-                      <p className="text-red-600 line-through font-semibold">
-                        ₹{(product.price * 1.2).toFixed(2)}
-                      </p>
-                      <p
-                        className="bg-red-500 text-white font-bold py-1 px-2 rounded-full text-sm relative z-10"
-                        // Adjust left padding for the icon
-                      >
-                        {Math.ceil(
-                          ((product.price * 1.2 - product.price) /
-                            (product.price * 1.2)) *
-                            100
-                        )}
-                        % off !
-                      </p>
-                    </div>
-
-                    {/* for actual price display */}
-                    <p className="text-green-700 font-semibold text-xl">
-                      ₹{product.price.toFixed(2)}
-                    </p>
-                    {/* for ratings */}
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Rating:
-                      </label>
-                      <div className="flex items-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={(e) => {
-                              handleStarClick(star);
-                              e.stopPropagation();
-                            }}
-                            className={`focus:outline-none`}
-                          >
-                            <svg
-                              className="w-6 h-6"
-                              viewBox="0 0 24 24"
-                              fill={star <= rating ? starColor : "none"}
-                              stroke={
-                                star <= rating ? starColor : "currentColor"
-                              }
-                              strokeWidth={2}
-                            >
-                              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                          </button>
-                        ))}
-                        <span className="text-gray-600 ml-2">
-                          {rating} stars
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    {adminLogin === "admin" ? (
-                      <div className="flex space-x-2 mb-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(product);
-                          }}
-                          className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:from-green-600 hover:to-green-400 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
-                        >
-                          Edit Item
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(product);
-                          }}
-                          className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:from-red-700 hover:to-red-500 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
-                        >
-                          {deleteLoadingId === product._id ? (
-                            <div className="flex items-center justify-center">
-                              <LoadingIcons.TailSpin
-                                stroke="#fff"
-                                strokeWidth={4}
-                                className="w-6 h-6 animate-spin"
-                              />
-                            </div>
-                          ) : (
-                            "Delete Item"
-                          )}
-                        </button>
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToCart(product);
-                        }}
-                        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:from-pink-500 hover:to-purple-500 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
-                      >
-                        {addcartLoadingId === product._id ? (
-                          <div className="flex items-center justify-center">
-                            <LoadingIcons.TailSpin
-                              stroke="#fff"
-                              strokeWidth={4}
-                              className="w-6 h-6 animate-spin"
-                            />
-                          </div>
-                        ) : (
-                          "Add to Cart"
-                        )}
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setProductToBuy(product);
-                          setButtonLoading(true);
-                          handleBuyNow(product);
-                        }}
-                        disabled={loadingId === product._id}
-                        className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:from-yellow-600 hover:to-yellow-400 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
-                      >
-                        {loadingId === product._id ? (
-                          <div className="flex items-center justify-center">
-                            <LoadingIcons.TailSpin
-                              stroke="#fff"
-                              strokeWidth={4}
-                              className="w-6 h-6 animate-spin"
-                            />
-                          </div>
-                        ) : (
-                          <>Buy Now</>
-                        )}
-
-                        {/* Buy Now
-                        {buttonLoading ? (
-                          <LoadingIcons.BallTriangle
-                            stroke="#fff"
-                            strokeWidth={2}
-                            className="w-6 h-6 animate-spin"
-                          />
-                        ) : (
-                          "Buy Now"
-                        )} */}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ">
+              {filteredProducts.map((product) => (
+                <ProductCard key={product._id} product={product} />
               ))}
             </div>
           </>
         ) : (
-          <>
-            <div className="flex flex-col items-center justify-center w-full h-50%">
-              <p className="text-xl text-grey-400 font-semibold mb-4">
-                Getting your products ready...wait a moment
-              </p>
-              <div className="flex flex-row w-full items-center justify-center space-x-4 pt-10">
-                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
-                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
-                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
-                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+            {/* Display skeleton loaders if data is loading */}
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse"
+              >
+                <div className="w-full h-48 bg-gray-200"></div>
+                <div className="p-6">
+                  <div className="h-6 bg-gray-200 mb-2 w-3/4 rounded"></div>
+                  <div className="h-4 bg-gray-200 mb-2 w-1/2 rounded"></div>
+                  <div className="h-4 bg-gray-200 mb-4 w-1/4 rounded"></div>
+                  <div className="h-8 bg-gray-200 mb-4 rounded w-full"></div>
+                  <div className="h-10 bg-gray-200 w-full rounded-md mt-4"></div>
+                </div>
               </div>
-              <div className="flex flex-row w-full items-center justify-center space-x-4 pt-10">
-                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
-                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
-                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
-                <Skeleton className="h-[125px] w-[250px] rounded-xl bg-gradient-to-r from-purple-500 to-pink-500" />
-              </div>
-            </div>
-          </>
+            ))}
+          </div>
         )}
+        </div>
       </main>
 
       {isEditing && editingProduct && (
@@ -921,12 +546,12 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                             onClick={() =>
                               handleRemoveFromCart(items.productId)
                             }
-                            className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-1 rounded"
+                            className="bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 text-sm px-4 py-1 rounded-md transition-colors"
                           >
                             {removeCartLoadingId === items.productId._id ? (
                               <div className="flex items-center justify-center">
                                 <LoadingIcons.TailSpin
-                                  stroke="#fff"
+                                  stroke="#dc2626"
                                   strokeWidth={4}
                                   className="w-6 h-6 animate-spin"
                                 />
@@ -942,7 +567,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                               handleBuyNowCart(items);
                             }}
                             disabled={loadingId === items.productId._id}
-                            className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-sm font-semibold py-1 px-4 rounded hover:from-yellow-600 hover:to-yellow-400 cursor-pointer hover:shadow-lg  transform hover:scale-105 transition-all duration-500 ease-in-out"
+                            className="bg-zinc-900 text-white text-sm font-semibold py-1 px-4 rounded-md hover:bg-zinc-800 cursor-pointer transition-colors duration-300"
                           >
                             {loadingId === items.productId._id ? (
                               <div className="flex items-center justify-center">
@@ -1038,7 +663,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                       e.stopPropagation();
                       handleEdit(selectedProduct);
                     }}
-                    className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                    className="w-full bg-zinc-100 text-zinc-900 border border-gray-200 font-semibold py-2 px-4 rounded-md hover:bg-zinc-200 transition-colors duration-300"
                   >
                     Edit Item
                   </button>
@@ -1047,12 +672,12 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
                       e.stopPropagation();
                       handleDelete(selectedProduct);
                     }}
-                    className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                    className="w-full bg-red-50 text-red-600 border border-red-200 font-semibold py-2 px-4 rounded-md hover:bg-red-100 transition-colors duration-300"
                   >
                     {deleteLoadingId === selectedProduct._id ? (
                       <div className="flex items-center justify-center">
                         <LoadingIcons.TailSpin
-                          stroke="#fff"
+                          stroke="#dc2626"
                           strokeWidth={4}
                           className="w-6 h-6 animate-spin"
                         />
@@ -1067,12 +692,12 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
               )}
               <button
                 onClick={() => addToCart(selectedProduct)}
-                className="w-full sm:w-1/2 mb-2 sm:mb-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300"
+                className="w-full sm:w-1/2 mb-2 sm:mb-0 bg-zinc-100 text-zinc-900 border border-gray-200 font-semibold py-2 px-4 rounded-md hover:bg-zinc-200 transition-colors duration-300"
               >
                 {addcartLoadingId === selectedProduct._id ? (
                   <div className="flex items-center justify-center">
                     <LoadingIcons.TailSpin
-                      stroke="#fff"
+                      stroke="#18181b"
                       strokeWidth={4}
                       className="w-6 h-6 animate-spin"
                     />
@@ -1088,7 +713,7 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
 
                   handleBuyNow(selectedProduct);
                 }}
-                className={`w-full sm:w-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold py-2 px-4 rounded-xl hover:shadow-lg transition-all duration-300`}
+                className={`w-full sm:w-1/2 bg-zinc-900 text-white font-semibold py-2 px-4 rounded-md hover:bg-zinc-800 transition-colors duration-300`}
               >
                 {loadingId === selectedProduct._id ? (
                   <div className="flex items-center justify-center">

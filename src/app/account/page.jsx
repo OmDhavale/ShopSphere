@@ -81,7 +81,7 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       {" "}
       <ToastContainer /> {/* Added ToastContainer for toast notifications */}
       {/* Added p-4 for padding */}
@@ -105,7 +105,7 @@ export default function AccountPage() {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="appearance-none border border-gray-300 rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   required
                 />
               </div>
@@ -121,7 +121,7 @@ export default function AccountPage() {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="appearance-none border border-gray-300 rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   required
                 />
               </div>
@@ -130,7 +130,7 @@ export default function AccountPage() {
                 {/* Modified flex for mobile view */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" //w-full added.
+                  className="w-full bg-zinc-900 text-white font-bold py-2 px-4 rounded-md hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900" //w-full added.
                 >
                   {isLogin ? (
                     <>
@@ -167,7 +167,7 @@ export default function AccountPage() {
                 <button
                   type="button"
                   onClick={() => setIsLogin(!isLogin)}
-                  className="inline-block align-baseline font-bold text-sm text-pink-500 hover:text-pink-800"
+                  className="inline-block align-baseline font-bold text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
                 >
                   {isLogin ? (
                     <>
@@ -220,7 +220,7 @@ export default function AccountPage() {
                   id="email"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="appearance-none border border-gray-300 rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   required
                 />
               </div>
@@ -236,7 +236,7 @@ export default function AccountPage() {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="appearance-none border border-gray-300 rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   required
                 />
               </div>
@@ -252,7 +252,7 @@ export default function AccountPage() {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="appearance-none border border-gray-300 rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-zinc-900"
                   required
                 />
               </div>
@@ -261,7 +261,7 @@ export default function AccountPage() {
                 {/* Modified flex for mobile view */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" //w-full added.
+                  className="w-full bg-zinc-900 text-white font-bold py-2 px-4 rounded-md hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900" //w-full added.
                 >
                   {isLogin ? (
                     <>
@@ -298,7 +298,7 @@ export default function AccountPage() {
                 <button
                   type="button"
                   onClick={() => setIsLogin(!isLogin)}
-                  className="inline-block align-baseline font-bold text-sm text-pink-500 hover:text-pink-800"
+                  className="inline-block align-baseline font-bold text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
                 >
                   {isLogin ? (
                     <>

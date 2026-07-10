@@ -16,13 +16,21 @@ export const metadata = {
   description: "An ECommerce platform for the modern web.",
 };
 
+import Navbar from "@/components/Navbar";
+import { CartProvider } from "@/context/CartContext";
+import CartDrawer from "@/components/CartDrawer";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <CartProvider>
+          <Navbar />
+          {children}
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );
