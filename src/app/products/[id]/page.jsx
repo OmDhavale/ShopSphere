@@ -148,8 +148,8 @@ export default function ProductDetailsPage({ params }) {
             </div>
 
             <div className="mb-8 flex items-end gap-4">
-              <span className="text-4xl font-bold text-zinc-900">${product.price.toFixed(2)}</span>
-              <span className="text-xl text-gray-400 line-through mb-1">${originalPrice.toFixed(2)}</span>
+              <span className="text-4xl font-bold text-zinc-900">₹{product.price.toFixed(2)}</span>
+              <span className="text-xl text-gray-400 line-through mb-1">₹{originalPrice.toFixed(2)}</span>
               <span className="text-sm font-semibold text-red-600 bg-red-50 px-2 py-1 rounded mb-2">
                 {Math.ceil(((originalPrice - product.price) / originalPrice) * 100)}% OFF
               </span>
@@ -186,7 +186,7 @@ export default function ProductDetailsPage({ params }) {
 
             {/* Benefits */}
             <ul className="space-y-3 mb-10 pb-10 border-b border-gray-100">
-              <li className="flex items-center gap-3 text-sm text-gray-600"><Check className="w-5 h-5 text-green-500" /> Free shipping on orders over $50</li>
+              <li className="flex items-center gap-3 text-sm text-gray-600"><Check className="w-5 h-5 text-green-500" /> Free shipping on orders over ₹50</li>
               <li className="flex items-center gap-3 text-sm text-gray-600"><Check className="w-5 h-5 text-green-500" /> 30-day return policy</li>
               <li className="flex items-center gap-3 text-sm text-gray-600"><Check className="w-5 h-5 text-green-500" /> Secure checkout</li>
             </ul>

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { toast, ToastContainer } from "react-toastify";
 import axios from 'axios';
 import LoadingIcons from "react-loading-icons";
+import { useCart } from "@/context/CartContext";
 
 export default function AccountPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -15,6 +16,7 @@ export default function AccountPage() {
   const [loginLoading,setLoginLoading] = useState(false);
   const [signupLoading,setSignupLoading] = useState(false);
   const router = useRouter();
+  const { setUser } = useCart();
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isLogin) {
@@ -37,6 +39,7 @@ export default function AccountPage() {
             email: response.data.email,
           }
           localStorage.setItem("localCredentials",JSON.stringify(storedData));
+          if (setUser) setUser(storedData); // Instantly update global state
           setEmail("")
           setPassword("")
           setTimeout(() => {

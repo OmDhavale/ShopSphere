@@ -10,7 +10,7 @@ import ProductCard from './components/ProductCard'; // Import the ProductCard co
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const sidebarRef = useRef(null); // Create a ref for the sidebar
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false); // State for login prompt
+
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [loading, setLoading ] = useState(true); // State for loading
@@ -43,14 +43,7 @@ export default function Home() {
     router.push("/products");
   };
 
-  const handleLoginRedirect = () => {
-    setShowLoginPrompt(false); // Close the prompt
-    router.push("/account"); // Redirect to the account page
-  };
 
-  const handleClosePrompt = () => {
-    setShowLoginPrompt(false);
-  };
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -150,9 +143,9 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {[
-                  { name: "Leather Tech Sleeve", price: "$89.00", oldPrice: "$112.00", image: "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?q=80&w=2009&auto=format&fit=crop" },
-                  { name: "Precision Brewer", price: "$145.00", oldPrice: "$170.00", image: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?q=80&w=1964&auto=format&fit=crop" },
-                  { name: "Slim Charge Pro", price: "$49.00", oldPrice: "$70.00", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=1988&auto=format&fit=crop" },
+                  { name: "Leather Tech Sleeve", price: "₹89.00", oldPrice: "₹112.00", image: "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?q=80&w=2009&auto=format&fit=crop" },
+                  { name: "Precision Brewer", price: "₹145.00", oldPrice: "₹170.00", image: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?q=80&w=1964&auto=format&fit=crop" },
+                  { name: "Slim Charge Pro", price: "₹49.00", oldPrice: "₹70.00", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=1988&auto=format&fit=crop" },
                 ].map((deal, idx) => (
                   <div key={idx} className="bg-white group rounded-md overflow-hidden border border-gray-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                     <div className="h-40 bg-gray-100 overflow-hidden relative">
@@ -193,7 +186,7 @@ export default function Home() {
                     <div className="p-4 border-t border-gray-100">
                       <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">{product.category}</p>
                       <h4 className="font-medium text-gray-900 mb-2 truncate">{product.name}</h4>
-                      <p className="font-semibold text-zinc-900">${product.price}</p>
+                      <p className="font-semibold text-zinc-900">₹{product.price}</p>
                     </div>
                   </div>
                 ))}
@@ -274,39 +267,7 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Login Prompt */}
-      {showLoginPrompt && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-md shadow-lg w-full max-w-md">
-            {" "}
-            {/* Added w-full max-w-md */}
-            <h2 className="text-2xl font-semibold  text-gray-900 mb-6 text-center">
-              Login Required
-            </h2>{" "}
-            {/* Added text-center */}
-            <p className="mb-8  text-gray-900  text-center">
-              Please log in to your account to continue.
-            </p>{" "}
-            {/* Added text-center */}
-            <div className="flex flex-col items-center justify-center space-y-4">
-              {" "}
-              {/* Changed flex layout */}
-              <button
-                onClick={handleLoginRedirect}
-                className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-900 transition-colors" //w-full added.
-              >
-                Login
-              </button>
-              <button
-                onClick={handleClosePrompt}
-                className="w-full bg-gray-300 text-gray-700 py-2 px-4 rounded" //w-full added.
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }

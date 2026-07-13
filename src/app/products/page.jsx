@@ -3,7 +3,7 @@
 
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter
 import axios from 'axios';
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -12,6 +12,19 @@ import LoadingIcons from "react-loading-icons";
 
 import EditProductForm from '../components/EditProductForm';
 import ProductCard from '../components/ProductCard';
+import { LayoutGrid, MonitorSmartphone, Shirt, Home, PenTool, Dumbbell, Sparkles, Tag } from 'lucide-react';
+
+const getCategoryIcon = (category) => {
+  const cat = category.toLowerCase();
+  if (cat.includes('electronic') || cat.includes('tech') || cat.includes('audio')) return <MonitorSmartphone size={24} />;
+  if (cat.includes('fashion') || cat.includes('apparel') || cat.includes('clothing')) return <Shirt size={24} />;
+  if (cat.includes('home') || cat.includes('lifestyle')) return <Home size={24} />;
+  if (cat.includes('stationery') || cat.includes('creative') || cat.includes('book')) return <PenTool size={24} />;
+  if (cat.includes('sport') || cat.includes('fitness')) return <Dumbbell size={24} />;
+  if (cat.includes('beauty') || cat.includes('cosmetic')) return <Sparkles size={24} />;
+  return <Tag size={24} />;
+};
+
 // import BuyComponent from '../product/[id]/BuyComponent'; // Import the BuyComponent
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');  //for search filter
@@ -19,9 +32,21 @@ export default function ProductsPage() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);  // for user credentials menu - desktop page
   const userMenuRef = useRef(null);
   const router = useRouter(); // Initialize useRouter
+  const searchParams = useSearchParams();
   const [productToBuy, setProductToBuy] = useState({});
   const [user, setUser] = useState({});   //for storing user credentials from local storage
   const [selectedProduct, setSelectedProduct] = useState(null); //for showing description of selected product  const [categories,setCategories] = useState(null);
+  
+  useEffect(() => {
+    if (searchParams) {
+      const q = searchParams.get('search');
+      if (q !== null) {
+        setSearchTerm(q);
+      } else {
+        setSearchTerm('');
+      }
+    }
+  }, [searchParams]);
    //Fetching product data
   const [ loading, setLoading] = useState(true) //loading state of products skeleton
   const [buttonLoading, setButtonLoading] = useState(false) 
@@ -345,53 +370,82 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
         </nav>
       </div>
 
+      {/* Horizontal Category Bar */}
+      <div className="w-full bg-white border-y border-gray-200 sticky top-0 z-40 mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <style>{`
+            .overflow-x-auto::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+          <div className="flex gap-8 items-center min-w-max">
+            <button 
+              onClick={() => setFilter('all')}
+              className={`flex flex-col items-center gap-1 group transition-colors ${filter === 'all' ? 'text-zinc-900' : 'text-gray-400 hover:text-zinc-900'}`}
+            >
+              <LayoutGrid size={24} />
+              <span className="text-sm font-medium">All</span>
+            </button>
+            {categories && [...new Map(categories.map(cat => [cat.toLowerCase(), cat])).values()].map((category, index) => (
+              <button 
+                key={index}
+                onClick={() => setFilter(category)}
+                className={`flex flex-col items-center gap-1 group transition-colors ${filter === category ? 'text-zinc-900' : 'text-gray-400 hover:text-zinc-900'}`}
+              >
+                {getCategoryIcon(category)}
+                <span className="text-sm font-medium capitalize">{category}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="flex justify-between items-end mb-6">
+          <div>
+            <span className="text-xs font-semibold text-zinc-900 uppercase tracking-widest">Top Rated</span>
+            <h2 className="text-2xl font-bold text-zinc-900 mt-1">Best Sellers</h2>
+          </div>
+          <a className="text-sm font-medium text-zinc-900 hover:underline flex items-center gap-1 cursor-pointer">
+            View All &rarr;
+          </a>
+        </div>
+        <div className="flex gap-6 overflow-x-auto pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {/* We use a slice of filteredProducts for Best Sellers */}
+          {filteredProducts.slice(0, 4).map(product => (
+            <div key={`bs-${product._id}`} className="min-w-[280px] md:min-w-[320px] max-w-[320px]">
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+      </div>
+
       <main className="pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-8 overflow-auto">
         <ToastContainer />
         
         {/* Left Sidebar for Desktop Filters */}
-        <aside className="w-full md:w-64 flex-shrink-0 hidden md:block">
-          <div className="bg-white p-6 rounded-lg border border-gray-200 sticky top-28">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
-            
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-md py-2 px-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 text-gray-800"
-              />
-            </div>
+        <aside className="w-full md:w-64 flex-shrink-0 hidden lg:block space-y-8">
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <div className="space-y-2">
-                <label className="flex items-center cursor-pointer">
-                  <input 
-                    type="radio" 
-                    name="category" 
-                    value="all" 
-                    checked={filter === "all"}
-                    onChange={(e) => setFilter(e.target.value)}
-                    className="form-radio h-4 w-4 text-zinc-900 border-gray-300 focus:ring-zinc-900"
-                  />
-                  <span className="ml-2 text-gray-700">All Categories</span>
-                </label>
-                {categories &&
-                  [...new Map(categories.map((cat) => [cat.toLowerCase(), cat])).values()].map((category, index) => (
-                    <label key={index} className="flex items-center cursor-pointer">
-                      <input 
-                        type="radio" 
-                        name="category" 
-                        value={category} 
-                        checked={filter === category}
-                        onChange={(e) => setFilter(e.target.value)}
-                        className="form-radio h-4 w-4 text-zinc-900 border-gray-300 focus:ring-zinc-900"
-                      />
-                      <span className="ml-2 text-gray-700 capitalize">{category}</span>
-                    </label>
-                  ))}
+
+          <div>
+            <h4 className="text-sm font-medium border-b border-gray-200 pb-2 mb-3">Availability</h4>
+            <label className="flex items-center gap-2 mt-2 cursor-pointer group">
+              <input type="checkbox" className="rounded-sm border-gray-300 text-zinc-900 focus:ring-zinc-900 h-4 w-4" defaultChecked />
+              <span className="text-sm text-gray-700 group-hover:text-zinc-900">In Stock</span>
+            </label>
+            <label className="flex items-center gap-2 mt-2 cursor-pointer group">
+              <input type="checkbox" className="rounded-sm border-gray-300 text-zinc-900 focus:ring-zinc-900 h-4 w-4" />
+              <span className="text-sm text-gray-700 group-hover:text-zinc-900">Pre-order</span>
+            </label>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium border-b border-gray-200 pb-2 mb-3">Price Range</h4>
+            <div className="mt-4 px-1">
+              <input type="range" className="w-full accent-zinc-900 h-1 bg-gray-200 appearance-none rounded-full" />
+              <div className="flex justify-between mt-2 text-xs text-gray-500">
+                <span>₹0</span>
+                <span>₹5,000+</span>
               </div>
             </div>
           </div>
@@ -400,15 +454,15 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
         {/* Main Product Area */}
         <div className="flex-1">
           {/* Top Control Bar */}
-          <div className="mb-6 flex justify-between items-center bg-white p-4 rounded-lg border border-gray-200">
-            <p className="text-gray-600">Showing {filteredProducts.length} products</p>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Sort by:</span>
-              <select className="rounded-md py-1 px-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 text-gray-800 bg-white text-sm">
+          <div className="mb-6 flex justify-between items-center border-b border-gray-200 pb-4">
+            <p className="text-sm text-gray-600">Showing <span className="font-bold text-zinc-900">{filteredProducts.length}</span> Products</p>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-500">Sort By:</span>
+              <select className="bg-transparent border-none text-sm font-medium text-zinc-900 focus:ring-0 cursor-pointer p-0">
                 <option>Featured</option>
+                <option>Newest</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
-                <option>Newest Arrivals</option>
               </select>
             </div>
           </div>

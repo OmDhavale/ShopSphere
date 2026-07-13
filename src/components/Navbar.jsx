@@ -3,14 +3,36 @@
 import { useState, useEffect } from "react";
 import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { cartCount, toggleCart } = useCart();
+  const router = useRouter();
+  const { cartCount, toggleCart, user, setUser } = useCart();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+    
+    if (val.trim() !== '') {
+      router.push(`/products?search=${encodeURIComponent(val)}`);
+    } else {
+      router.push(`/products`);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("localCredentials");
+    if (setUser) setUser(null);
+    router.push("/");
+  };
+
+  const name = user?.name || (user?.email ? user.email.split('@')[0] : "John Doe");
+  const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -67,6 +89,8 @@ export default function Navbar() {
                 <input
                   type="text"
                   placeholder="Search products, brands..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-zinc-900 focus:border-zinc-900 sm:text-sm transition-all"
                 />
               </div>
@@ -77,9 +101,31 @@ export default function Navbar() {
               <Link href="/wishlist" className="text-gray-400 hover:text-zinc-900 transition-colors">
                 <Heart className="h-5 w-5" />
               </Link>
-              <Link href="/account" className="text-gray-400 hover:text-zinc-900 transition-colors">
-                <User className="h-5 w-5" />
-              </Link>
+              {user ? (
+                <div className="relative group">
+                  <button className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-100 text-zinc-900 font-medium text-sm hover:bg-zinc-200 transition-colors focus:outline-none">
+                    {initials}
+                  </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0 z-50">
+                    <div className="p-4 border-b border-gray-50">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                    <div className="p-2 flex flex-col">
+                      <Link href="/account" className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-left">My Profile</Link>
+                      <Link href="/orders" className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-left">Orders</Link>
+                      <Link href="/settings" className="px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors text-left">Settings</Link>
+                    </div>
+                    <div className="p-2 border-t border-gray-50">
+                      <button onClick={handleLogout} className="w-full px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors text-left">Logout</button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Link href="/account" className="text-gray-400 hover:text-zinc-900 transition-colors">
+                  <User className="h-5 w-5" />
+                </Link>
+              )}
               <button onClick={toggleCart} className="text-gray-400 hover:text-zinc-900 transition-colors relative cursor-pointer focus:outline-none">
                 <ShoppingBag className="h-5 w-5" />
                 {cartCount > 0 && (
@@ -124,6 +170,8 @@ export default function Navbar() {
                 <input
                   type="text"
                   placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-zinc-900 sm:text-sm"
                 />
               </div>
@@ -141,9 +189,35 @@ export default function Navbar() {
                <Link href="/wishlist" className="flex items-center text-sm font-medium text-gray-500 hover:text-zinc-900">
                 <Heart className="h-5 w-5 mr-2" /> Wishlist
               </Link>
-              <Link href="/account" className="flex items-center text-sm font-medium text-gray-500 hover:text-zinc-900">
-                <User className="h-5 w-5 mr-2" /> Account
-              </Link>
+              {user ? (
+                <div className="flex flex-col w-full">
+                  <div className="flex items-center space-x-3 mb-4 p-2 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-zinc-200 text-zinc-900 font-medium">
+                      {initials}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                  </div>
+                  <Link href="/account" className="flex items-center text-sm font-medium text-gray-500 hover:text-zinc-900 py-2">
+                    My Profile
+                  </Link>
+                  <Link href="/orders" className="flex items-center text-sm font-medium text-gray-500 hover:text-zinc-900 py-2">
+                    Orders
+                  </Link>
+                  <Link href="/settings" className="flex items-center text-sm font-medium text-gray-500 hover:text-zinc-900 py-2">
+                    Settings
+                  </Link>
+                  <button onClick={handleLogout} className="flex items-center text-sm font-medium text-red-600 hover:text-red-700 py-2 text-left mt-2">
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link href="/account" className="flex items-center text-sm font-medium text-gray-500 hover:text-zinc-900">
+                  <User className="h-5 w-5 mr-2" /> Account
+                </Link>
+              )}
             </div>
           </div>
         )}

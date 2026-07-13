@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 const CartContext = createContext();
 
@@ -11,6 +12,8 @@ export function CartProvider({ children }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const router = useRouter();
 
   // Load user on mount
   useEffect(() => {
@@ -53,8 +56,7 @@ export function CartProvider({ children }) {
 
   const addToCart = async (product, quantity = 1) => {
     if (!user?.email) {
-      toast.info("Please log in to add items to cart.");
-      // Could trigger a login modal here instead
+      setShowLoginPrompt(true);
       return;
     }
     
@@ -81,9 +83,11 @@ export function CartProvider({ children }) {
   const removeFromCart = async (productId) => {
     if (!user?.email) return;
     try {
-      await axios.post("/api/removeFromCart", {
-        email: user.email,
-        productId: productId,
+      await axios.delete("/api/removeFromCart", {
+        data: {
+          email: user.email,
+          productId: productId,
+        }
       });
       fetchCart();
     } catch (error) {
@@ -124,9 +128,42 @@ export function CartProvider({ children }) {
       updateQuantity,
       cartTotal,
       cartCount,
-      setIsCartOpen
+      setIsCartOpen,
+      user,
+      setUser
     }}>
       {children}
+      
+      {/* Global Login Prompt Modal */}
+      {showLoginPrompt && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black/40 backdrop-blur-sm flex items-center justify-center z-[100] px-4">
+          <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+              Login Required
+            </h2>
+            <p className="mb-8 text-gray-600 text-center">
+              Please log in to your account to add items to your cart and proceed to checkout.
+            </p>
+            <div className="flex flex-col space-y-3">
+              <button
+                onClick={() => {
+                  setShowLoginPrompt(false);
+                  router.push("/account");
+                }}
+                className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-3 px-4 rounded-xl focus:outline-none transition-colors"
+              >
+                Proceed to Login
+              </button>
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </CartContext.Provider>
   );
 }

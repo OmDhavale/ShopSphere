@@ -17,7 +17,7 @@ export async function PUT(req) {
     }
 
     const item = cart.items.find(
-      (item) => item.productId._id.toString() === productId._id
+      (item) => item.productId.toString() === productId
     );
 
     if (!item) {
