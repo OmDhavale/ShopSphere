@@ -2,7 +2,7 @@
 "use client";
 
 import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation'; // Import useRouter
 import axios from 'axios';
 import { Skeleton } from "@/components/ui/skeleton"
@@ -26,7 +26,7 @@ const getCategoryIcon = (category) => {
 };
 
 // import BuyComponent from '../product/[id]/BuyComponent'; // Import the BuyComponent
-export default function ProductsPage() {
+function ProductsContent() {
   const [searchTerm, setSearchTerm] = useState('');  //for search filter
   const [filter, setFilter] = useState('all');  // for category filter  
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);  // for user credentials menu - desktop page
@@ -799,3 +799,11 @@ const [removeCartLoadingId, setRemoveCartLoadingId] = useState(null);
   
 }
 
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductsContent />
+    </Suspense>
+  );
+}
