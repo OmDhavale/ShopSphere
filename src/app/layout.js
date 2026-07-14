@@ -19,13 +19,15 @@ export const metadata = {
 import Navbar from "@/components/Navbar";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/CartDrawer";
-
+import TelemetryProvider from "@/components/TelemetryProvider";
 export default function RootLayout({ children }) {
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <TelemetryProvider />
         <CartProvider>
           <Navbar />
           {children}
