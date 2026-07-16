@@ -1,6 +1,6 @@
 // route.js inside /api/updateCartQuantity
 import Cart from "../../../Models/CartModel/cart.model.js";
-import { dbConnect } from "../../../dbConfig/dbConnect";
+import { dbConnect } from "../../../dbConfig/dbConnect.js";
 
 export async function PUT(req) {
   try {

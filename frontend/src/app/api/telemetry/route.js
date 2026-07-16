@@ -1,6 +1,6 @@
 // app/api/telemetry/route.js
 import { NextResponse } from 'next/server';
-import { getKafkaProducer } from '@/lib/kafka'; // Adjust import path if needed
+import { getKafkaProducer } from '@/lib/kafka';
 
 export async function POST(request) {
     try {

@@ -20,19 +20,22 @@ import Navbar from "@/components/Navbar";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/CartDrawer";
 import TelemetryProvider from "@/components/TelemetryProvider";
-export default function RootLayout({ children }) {
+import SecurityGuard from "@/components/SecurityGuard";
 
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TelemetryProvider />
-        <CartProvider>
-          <Navbar />
-          {children}
-          <CartDrawer />
-        </CartProvider>
+        <SecurityGuard>
+          <CartProvider>
+            <Navbar />
+            {children}
+            <CartDrawer />
+          </CartProvider>
+        </SecurityGuard>
       </body>
     </html>
   );
