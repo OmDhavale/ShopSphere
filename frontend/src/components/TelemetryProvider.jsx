@@ -25,29 +25,38 @@ export default function TelemetryProvider() {
             lastMouseTimeThrottled.current = now;
 
             // Calculate velocity (pixels per millisecond)
-            const dx = e.clientX - lastMousePos.current.x;
-            const dy = e.clientY - lastMousePos.current.y;
+            const dx = e.pageX - lastMousePos.current.x;
+            const dy = e.pageY - lastMousePos.current.y;
             const dt = now - lastMousePos.current.time || 1; // prevent divide by zero
             const distance = Math.sqrt(dx * dx + dy * dy);
             const velocity = distance / dt;
 
             // Update last mouse position
-            lastMousePos.current = { x: e.clientX, y: e.clientY, time: now };
+            lastMousePos.current = { x: e.pageX, y: e.pageY, time: now };
 
+            // Store as PERCENTAGES so the heatmap renders correctly at any container size
+            const docWidth  = document.documentElement.scrollWidth  || window.innerWidth;
+            const docHeight = document.documentElement.scrollHeight || window.innerHeight;
             eventBuffer.current.push({
                 type: 'mouse_move',
-                x: e.clientX,
-                y: e.clientY,
+                x: e.pageX,
+                y: e.pageY,
+                xPct: (e.pageX / docWidth)  * 100,
+                yPct: (e.pageY / docHeight) * 100,
                 velocity: velocity,
                 timestamp: now
             });
         };
 
         const handleClick = (e) => {
+            const docWidth  = document.documentElement.scrollWidth  || window.innerWidth;
+            const docHeight = document.documentElement.scrollHeight || window.innerHeight;
             eventBuffer.current.push({
                 type: 'click',
-                x: e.clientX,
-                y: e.clientY,
+                x: e.pageX,
+                y: e.pageY,
+                xPct: (e.pageX / docWidth)  * 100,
+                yPct: (e.pageY / docHeight) * 100,
                 targetTag: e.target?.tagName?.toLowerCase() || 'unknown',
                 timestamp: Date.now()
             });
@@ -73,6 +82,9 @@ export default function TelemetryProvider() {
                 const payload = {
                     sessionId: sessionId,
                     userId: "guest_user", // Default for now
+                    pageUrl: window.location.pathname,
+                    screenWidth: window.innerWidth,
+                    screenHeight: window.innerHeight,
                     events: [...eventBuffer.current]
                 };
 

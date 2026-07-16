@@ -5,7 +5,7 @@ import { getKafkaProducer } from '@/lib/kafka';
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { sessionId, userId, events } = body;
+        const { sessionId, userId, pageUrl, screenWidth, screenHeight, events } = body;
 
         if (!sessionId || !events) {
             return NextResponse.json({ error: 'Invalid schema' }, { status: 400 });
@@ -20,7 +20,7 @@ export async function POST(request) {
             messages: [
                 {
                     key: sessionId,
-                    value: JSON.stringify({ sessionId, userId, events })
+                    value: JSON.stringify({ sessionId, userId, pageUrl, screenWidth, screenHeight, events })
                 }
             ]
         });

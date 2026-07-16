@@ -24,32 +24,62 @@ const kafka = new Kafka({
 });
 const consumer = kafka.consumer({ groupId: 'action-layer-group' });
 
+// Setup Mongoose Connection
+import mongoose from 'mongoose';
+import Telemetry from './models/Telemetry.js';
+
+const MONGO_URI = process.env.MONGO_URI
+mongoose.connect(MONGO_URI, {
+}).then(() => console.log('📦 Connected to MongoDB from Action Layer'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
 // 3. The Main Event Loop
 async function start() {
     // Ensure topic exists to prevent UNKNOWN_TOPIC_OR_PARTITION crash
     const admin = kafka.admin();
     await admin.connect();
     const topics = await admin.listTopics();
-    if (!topics.includes('fraud-alerts')) {
+    const requiredTopics = ['fraud-alerts', 'raw-clickstream-events'];
+    const topicsToCreate = requiredTopics.filter(t => !topics.includes(t));
+
+    if (topicsToCreate.length > 0) {
         await admin.createTopics({
-            topics: [{ topic: 'fraud-alerts' }]
+            topics: topicsToCreate.map(t => ({ topic: t }))
         });
-        console.log('✅ Created fraud-alerts topic');
+        console.log(`✅ Created topics: ${topicsToCreate.join(', ')}`);
     }
     await admin.disconnect();
 
     await consumer.connect();
     await consumer.subscribe({ topic: 'fraud-alerts', fromBeginning: false });
-    console.log('📡 WebSocket Sidecar listening to Kafka: fraud-alerts...');
+    await consumer.subscribe({ topic: 'raw-clickstream-events', fromBeginning: false });
+    console.log('📡 WebSocket Sidecar listening to Kafka: fraud-alerts and raw-clickstream-events...');
 
     // When Python drops an alert into Kafka, this triggers instantly
     await consumer.run({
-        eachMessage: async ({ message }) => {
-            const payload = JSON.parse(message.value.toString());
-            console.log(`🚨 Alert Received for Session: ${payload.sessionId} -> ${payload.action}`);
+        eachMessage: async ({ topic, message }) => {
+            if (topic === 'fraud-alerts') {
+                const payload = JSON.parse(message.value.toString());
+                console.log(`🚨 Alert Received for Session: ${payload.sessionId} -> ${payload.action}`);
 
-            // Blast the alert down the WebSocket to the React frontend
-            io.emit('security-action', payload);
+                // Blast the alert down the WebSocket to the React frontend
+                io.emit('security-action', payload);
+            } else if (topic === 'raw-clickstream-events') {
+                const payload = JSON.parse(message.value.toString());
+                // Save to MongoDB
+                try {
+                    await Telemetry.create({
+                        sessionId: payload.sessionId,
+                        userId: payload.userId,
+                        pageUrl: payload.pageUrl || 'unknown',
+                        screenWidth: payload.screenWidth || 1920,
+                        screenHeight: payload.screenHeight || 1080,
+                        events: payload.events || []
+                    });
+                } catch (err) {
+                    console.error('Failed to save telemetry data to MongoDB', err);
+                }
+            }
         },
     });
 }
