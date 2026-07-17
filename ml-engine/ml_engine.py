@@ -69,8 +69,9 @@ try:
             print(f"[WARMUP] Learning baseline... ({len(memory_buffer)}/{WARMUP_LIMIT})")
 
         else:
-            x_train = np.array(memory_buffer)
-            model.fit(x_train)
+            if len(memory_buffer) == WARMUP_LIMIT:
+                x_train = np.array(memory_buffer)
+                model.fit(x_train)
 
             x_test = np.array([current_behaviour])
             risk_score = model.predict_proba(x_test)[0][1]
@@ -88,6 +89,8 @@ try:
             else:
                 print(f"✅ GREEN ZONE  | Session: {session_id[:8]} | Score: {risk_score:.2f} -> ALLOWED")
                 memory_buffer.append(current_behaviour)
+                x_train = np.array(memory_buffer)
+                model.fit(x_train)
 
 except KeyboardInterrupt:
     print("\n🛑 Shutting down ML Engine safely...")

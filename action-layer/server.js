@@ -3,6 +3,8 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { Kafka } from 'kafkajs';
 import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // 1. Setup the Web Server & Socket.io
 const app = express();
@@ -22,20 +24,22 @@ const kafka = new Kafka({
     clientId: 'websocket-sidecar',
     brokers: ['localhost:9092']
 });
-const consumer = kafka.consumer({ groupId: 'action-layer-group' });
+const consumer1 = kafka.consumer({ groupId: 'fraud-alerts-detector' });
+const consumer2 = kafka.consumer({ groupId: 'raw-clickstream-grabber' });
 
 // Setup Mongoose Connection
 import mongoose from 'mongoose';
 import Telemetry from './models/Telemetry.js';
 
-const MONGO_URI = process.env.MONGO_URI
+const MONGO_URI = process.env.MONGODB_URI
 mongoose.connect(MONGO_URI, {
 }).then(() => console.log('📦 Connected to MongoDB from Action Layer'))
     .catch(err => console.error('MongoDB connection error:', err));
 
+
+
 // 3. The Main Event Loop
 async function start() {
-    // Ensure topic exists to prevent UNKNOWN_TOPIC_OR_PARTITION crash
     const admin = kafka.admin();
     await admin.connect();
     const topics = await admin.listTopics();
@@ -49,36 +53,42 @@ async function start() {
         console.log(`✅ Created topics: ${topicsToCreate.join(', ')}`);
     }
     await admin.disconnect();
+    // Ensure topic exists to prevent UNKNOWN_TOPIC_OR_PARTITION crash
 
-    await consumer.connect();
-    await consumer.subscribe({ topic: 'fraud-alerts', fromBeginning: false });
-    await consumer.subscribe({ topic: 'raw-clickstream-events', fromBeginning: false });
+    await consumer1.connect();
+    await consumer1.subscribe({ topic: 'fraud-alerts', fromBeginning: false });
+    await consumer2.connect();
+    await consumer2.subscribe({ topic: 'raw-clickstream-events', fromBeginning: false });
     console.log('📡 WebSocket Sidecar listening to Kafka: fraud-alerts and raw-clickstream-events...');
 
     // When Python drops an alert into Kafka, this triggers instantly
-    await consumer.run({
-        eachMessage: async ({ topic, message }) => {
-            if (topic === 'fraud-alerts') {
-                const payload = JSON.parse(message.value.toString());
-                console.log(`🚨 Alert Received for Session: ${payload.sessionId} -> ${payload.action}`);
+    await consumer1.run({
+        eachMessage: ({ message }) => {
+            const payload = JSON.parse(message.value.toString());
 
-                // Blast the alert down the WebSocket to the React frontend
-                io.emit('security-action', payload);
-            } else if (topic === 'raw-clickstream-events') {
-                const payload = JSON.parse(message.value.toString());
-                // Save to MongoDB
-                try {
-                    await Telemetry.create({
-                        sessionId: payload.sessionId,
-                        userId: payload.userId,
-                        pageUrl: payload.pageUrl || 'unknown',
-                        screenWidth: payload.screenWidth || 1920,
-                        screenHeight: payload.screenHeight || 1080,
-                        events: payload.events || []
-                    });
-                } catch (err) {
-                    console.error('Failed to save telemetry data to MongoDB', err);
-                }
+            console.log(`🚨 Alert Received for Session: ${payload.sessionId} -> ${payload.action}`);
+
+            // Blast the alert down the WebSocket to the React frontend
+            io.emit('security-action', payload);
+        },
+    });
+
+    await consumer2.run({
+        eachMessage: async ({ message }) => {
+            const payload = JSON.parse(message.value.toString());
+
+            // Save to MongoDB
+            try {
+                await Telemetry.create({
+                    sessionId: payload.sessionId,
+                    userId: payload.userId,
+                    pageUrl: payload.pageUrl || 'unknown',
+                    screenWidth: payload.screenWidth || 1920,
+                    screenHeight: payload.screenHeight || 1080,
+                    events: payload.events || []
+                });
+            } catch (err) {
+                console.error('Failed to save telemetry data to MongoDB', err);
             }
         },
     });
