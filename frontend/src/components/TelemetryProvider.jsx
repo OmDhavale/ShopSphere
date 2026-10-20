@@ -24,15 +24,17 @@ export default function TelemetryProvider() {
             if (now - lastMouseTimeThrottled.current < 50) return;
             lastMouseTimeThrottled.current = now;
 
-            // Calculate velocity (pixels per millisecond)
-            const dx = e.pageX - lastMousePos.current.x;
-            const dy = e.pageY - lastMousePos.current.y;
-            const dt = now - lastMousePos.current.time || 1; // prevent divide by zero
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            const velocity = distance / dt;
+            /*
+                // Calculate velocity (pixels per millisecond)
+                const dx = e.pageX - lastMousePos.current.x;
+                const dy = e.pageY - lastMousePos.current.y;
+                const dt = now - lastMousePos.current.time || 1; // prevent divide by zero
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const velocity = distance / dt;
 
-            // Update last mouse position
-            lastMousePos.current = { x: e.pageX, y: e.pageY, time: now };
+                // Update last mouse position
+                lastMousePos.current = { x: e.pageX, y: e.pageY, time: now };
+            */
 
             // Store as PERCENTAGES so the heatmap renders correctly at any container size
             const docWidth  = document.documentElement.scrollWidth  || window.innerWidth;
@@ -43,7 +45,7 @@ export default function TelemetryProvider() {
                 y: e.pageY,
                 xPct: (e.pageX / docWidth)  * 100,
                 yPct: (e.pageY / docHeight) * 100,
-                velocity: velocity,
+                // velocity: velocity,
                 timestamp: now
             });
         };
